@@ -20,7 +20,7 @@ namespace anaCuts
 {
 	const std::array<UInt_t, 11> trigNumber = {880011};//zdce-mb
 	// event cuts 
-	Float_t const Vz_up = 50;
+	Float_t const Vz_up = 70;
 	Float_t const Vz_low = -50;
 	Float_t const Vr = 2; // 2cm
 	Float_t const vzVpdVz = 5; // cm
