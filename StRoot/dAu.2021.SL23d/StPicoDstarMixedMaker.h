@@ -18,6 +18,8 @@
 #include "StMaker.h"
 #include "StThreeVectorF.hh"
 #include "StPicoEvent/StPicoDst.h"
+#include "../StRefMultCorr/StRefMultCorr.h"
+#include "../StRefMultCorr/CentralityMaker.h"
 #include "TProfile.h"
 #include "TH1.h"
 #include "TH2.h"
@@ -63,6 +65,7 @@ class StPicoDstarMixedMaker : public StMaker
 
   private:
     StPicoDstMaker* mPicoDstMaker;
+    StRefMultCorr* mRefMultCorrUtil;
 	TString mInputFilesList;
 	TString mOutFileBaseName;
 
@@ -75,6 +78,7 @@ class StPicoDstarMixedMaker : public StMaker
     Float_t getTofBeta(StPicoTrack const* const trk) const;
 	Double_t getPhiVAngle(TLorentzVector e1, TLorentzVector e2, Int_t q1, Int_t q2) const;
     Int_t getRefmult(StPicoDst const* const picoDst, StPicoEvent const* const picoEvent) const;
+    Int_t getRefmult6(StPicoDst const* const picoDst, StPicoEvent const* const picoEvent) const;
 	Double_t getNSigmaECorr(TVector3 mom) const;
 	Double_t getNSigmaPiKPCorr(Int_t num_variable, TVector3 mom) const;
 	void copyCurrentToBuffer();
@@ -109,6 +113,7 @@ class StPicoDstarMixedMaker : public StMaker
 
 	Float_t mBfield;
 	Int_t mRefmult;
+    Int_t mRefmult6;
 	Int_t Refmult;
 	Int_t mCen16,mCen9;
     TF1* fphiVcut;
@@ -116,6 +121,7 @@ class StPicoDstarMixedMaker : public StMaker
     TH1F* h_passEvtcut;
 	TH1D* h_passTrkcut;
     TH1F* h_cen;
+    TH1F* h_cen_rW;
     TH1F* h_RefMult;
     
     // Histograms

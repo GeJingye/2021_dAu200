@@ -1,7 +1,7 @@
 //---------------------从dAu200GeV_2016.root中提取直方图，并进行设置更改和元素添加----------------------
 #include "../2021_OO200/someFunction.h"
-#include "StRoot/StAnaCuts.h"
-void DrawNSigmaEPiKP(TString inFilename = "roots/20260816_dAu200_2016.root", Int_t number = 1) //
+#include "StRoot/dAu.2021.SL23d/StAnaCuts.h"
+void DrawNSigmaEPiKP(TString inFilename = "roots/5_20260831_dAu2021_TOF_newCenDefin_keepSamewithzih.root", Int_t number = 5) //
 {
 	// 从root文件中导入待拟合的直方图
 	TFile *inFile = new TFile(inFilename);
@@ -13,7 +13,23 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/20260816_dAu200_2016.root", Int
 	TH1F *h_cen = (TH1F *)inFile->Get("h_cen");
 	TH1F *h_Vz = (TH1F *)inFile->Get("h_Vz");
 	TH1F *h_Vr = (TH1F *)inFile->Get("h_Vr");
-	TH1F *h_VpdVzmVz = (TH1F *)inFile->Get("h_VpdVzmVz");h_VpdVzmVz->GetXaxis()->SetRangeUser(-20,20);
+	TH1F *h_VpdVz = (TH1F *)inFile->Get("h_VpdVz");
+	TH1F *h_VpdVzmVz = (TH1F *)inFile->Get("h_VpdVzmVz");//h_VpdVzmVz->GetXaxis()->SetRangeUser(-20,20);
+	Double_t underflow = h_VpdVz->GetBinContent(0);  // underflow bin 索引为 0
+	Double_t overflow  = h_VpdVz->GetBinContent(h_VpdVz->GetNbinsX() + 1);  // overflow bin 索引为 n+1
+	// std::cout << "Underflow: " << underflow << std::endl;
+	// std::cout << "Overflow:  " << overflow << std::endl;
+
+	// Int_t binLow  = h_VpdVzmVz->FindBin(-10.0);   // 找到 -10 对应的 bin
+	// Int_t binHigh = h_VpdVzmVz->FindBin( 10.0);   // 找到  10 对应的 bin
+	// Double_t countInRange = h_VpdVzmVz->Integral(binLow, binHigh);
+	// Double_t totalCount = h_VpdVzmVz->Integral(1, h_VpdVzmVz->GetNbinsX());
+	// Double_t totalCount1 = h_VpdVzmVz->Integral(0, h_VpdVzmVz->GetNbinsX() + 1);
+	// std::cout << "Count in [-10, 10] cm: " << countInRange << std::endl;
+	// std::cout << "Total count: " << totalCount << std::endl;
+	// std::cout << "Total count (including under/overflow): " << totalCount1 << std::endl;
+	// std::cout << "Fraction in range: " << countInRange / totalCount * 100 << "%" << std::endl;
+	
 	TH1F *h_nTofMat_RefMul = (TH1F *)inFile->Get("h_nTofMat_RefMul");if(!h_nTofMat_RefMul) {cout<<"h_nTofMat_RefMul not found! Exiting..."<<endl; return;}
 	TH1F *h_passEvtcut = (TH1F *)inFile->Get("h_passEvtcut");if(!h_passEvtcut) {cout<<"h_passEvtcut not found! Exiting..."<<endl; return;}
 	TH1F *h_passTrkcut = (TH1F *)inFile->Get("h_passTrkcut");if(!h_passTrkcut) {cout<<"h_passTrkcut not found! Exiting..."<<endl; return;}
@@ -44,7 +60,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/20260816_dAu200_2016.root", Int
 	TH2F *h_Mee_PhiV__unlikeSame = (TH2F *)inFile->Get("h_Mee_PhiV__unlikeSame");if(!h_Mee_PhiV__unlikeSame) {cout<<"h_Mee_PhiV__unlikeSame not found! Exiting..."<<endl; return;}
 	TH1F *h_Mee__unlikeSame = (TH1F *)inFile->Get("h_Mee__unlikeSame");if(!h_Mee__unlikeSame) {cout<<"h_Mee__unlikeSame not found! Exiting..."<<endl; return;}
 	TH1F *h_Mee__unlikeSame__w_PhiV_Cut = (TH1F *)inFile->Get("h_Mee__unlikeSame__w_PhiV_Cut");if(!h_Mee__unlikeSame__w_PhiV_Cut) {cout<<"h_Mee__unlikeSame__w_PhiV_Cut not found! Exiting..."<<endl; return;}
-	auto fphiVcut = new TF1("fphiVcut", "0.84326*exp(-49.4819*x/1000)-0.996609*x/1000+0.19801", 0, 500.0);
+	auto fphiVcut = new TF1("fphiVcut", "0.84326*exp(-49.4819*x)-0.996609*x+0.19801", 0, 0.5);
 	fphiVcut->SetNpx(1000);
 	
 	if (0) // clear plot
@@ -70,7 +86,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/20260816_dAu200_2016.root", Int
 
 		c_temp->SaveAs(Form("roots/%d_temp.png", number));
 	}
-	if (0) // h_passEvtcut,h_passTrkcut,h_nHitsFit_Pt_Eta,h_nHitsDEdx_Pt_Eta,h_pDca_Pt_Eta
+	if (1) // h_passEvtcut,h_passTrkcut,h_nHitsFit_Pt_Eta,h_nHitsDEdx_Pt_Eta,h_pDca_Pt_Eta
 	{
 		// 投影
 		TH2F *h_nHitsFit_Pt = (TH2F *)h_nHitsFit_Pt_Eta->Project3D("zx");if(!h_nHitsFit_Pt) {cout<<"h_nHitsFit_Pt not found! Exiting..."<<endl; return;}
@@ -299,12 +315,8 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/20260816_dAu200_2016.root", Int
 
 		c1->SaveAs(Form("roots/%d_TrackQA_and_TrackTOFMatch.png", number));
 	}
-	if (10) // check PhiV cut
+	if (1) // check PhiV cut
 	{
-		h_Mee_PhiV__unlikeSame->RebinX(100);
-		h_Mee__unlikeSame->RebinX(100);
-		h_Mee__unlikeSame__w_PhiV_Cut->RebinX(100);
-
 		h_Mee__unlikeSame->SetLineColor(kBlack);
 		h_Mee__unlikeSame->GetYaxis()->SetTitleOffset(1.5);
 		h_Mee__unlikeSame__w_PhiV_Cut->SetLineColor(kBlue);
@@ -317,24 +329,25 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/20260816_dAu200_2016.root", Int
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		fphiVcut->GetXaxis()->SetRangeUser(0, 200);
+		h_Mee_PhiV__unlikeSame->GetXaxis()->SetRangeUser(0, 0.2);
 		h_Mee_PhiV__unlikeSame->DrawClone("col z");
 		fphiVcut->DrawClone("same");
 		TPaveText *pt2 = new TPaveText(0.15, 0.79, 0.85, 0.86, "NDC NB");
 		pt2->SetFillColorAlpha(0, 0);   // 透明底
+		pt2->SetFillStyle(0);
 		pt2->SetBorderSize(0);
 		pt2->SetTextFont(42);
-		pt2->SetTextSize(0.032);
+		pt2->SetTextSize(0.04);
 		pt2->SetTextAlign(12);
-		pt2->AddText("#phi_{V}(M_{ee})=0.8433*Exp(-49.4819*M)-0.9966*M+0.1980");
+		pt2->AddText("#phi_{V}=0.8433*Exp(-49.4819*M)-0.9966*M+0.1980");
 		pt2->DrawClone("same");
 
 		c_temp->cd(2);
-		gPad->SetLogz(1);
+		gPad->SetLogy(1);
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		h_Mee__unlikeSame->GetXaxis()->SetRangeUser(0, 200);
+		h_Mee__unlikeSame->GetXaxis()->SetRangeUser(0, 0.2);
 		h_Mee__unlikeSame->DrawClone("");
 		h_Mee__unlikeSame__w_PhiV_Cut->DrawClone("same");
 		auto legend = new TLegend(0.53, 0.58, 0.78, 0.68);
@@ -346,12 +359,12 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/20260816_dAu200_2016.root", Int
 		legend->DrawClone("same");
 
 		c_temp->cd(3);
-		gPad->SetLogz(1);
+		gPad->SetLogy(1);
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		h_Mee__unlikeSame->GetXaxis()->SetRangeUser(0, 500);
-		h_Mee__unlikeSame__w_PhiV_Cut->GetXaxis()->SetRangeUser(0, 500);
+		h_Mee__unlikeSame->GetXaxis()->SetRangeUser(0, 0.5);
+		h_Mee__unlikeSame__w_PhiV_Cut->GetXaxis()->SetRangeUser(0, 0.5);
 		h_Mee__unlikeSame->DrawClone("");
 		h_Mee__unlikeSame__w_PhiV_Cut->DrawClone("same");
 		legend->DrawClone("same");
@@ -365,7 +378,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/20260816_dAu200_2016.root", Int
 		c_temp->SaveAs(Form("roots/%d_PhiV_Check.png", number));
 	}
 
-	if (0) // EID in group1(pT>0.2, |eta|<1)
+	if (1) // EID in group1(pT>0.2, |eta|<1)
 	{
 		// 设置直方图格式
 		// 去除误差条，设置Marker形状颜色，设置线条颜色，设置图例，设置坐标轴标题，设置对数Y坐标）

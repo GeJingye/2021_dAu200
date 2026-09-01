@@ -24,6 +24,8 @@
 #include "phys_constants.h"
 #include "StPicoEvent/StPicoBTofPidTraits.h"
 #include "StPicoEvent/StPicoETofPidTraits.h"
+#include "../StRefMultCorr/StRefMultCorr.h"
+#include "../StRefMultCorr/CentralityMaker.h"
 #include "StBTofUtil/tofPathLength.hh"
 #include "StPicoDstMaker/StPicoDstMaker.h"
 #include "StPicoEvent/StPicoDst.h"
@@ -116,18 +118,22 @@ void StPicoDstarMixedMaker::initHists()
 	memset(buffer_nEPlus, 0, sizeof(buffer_nEPlus));
 	memset(buffer_nEMinus, 0, sizeof(buffer_nEMinus));
 
+	mRefMultCorrUtil = CentralityMaker::instance()->getRefMult6Corr();
 	// Event histograms
 	fphiVcut = new TF1("fphiVcut", "0.84326*exp(-49.4819*x)-0.996609*x+0.19801", 0.0, 1.0);
 	h_RunNum = new TH1F("h_RunNum", "h_RunNum", totalNum, -0.5, totalNum - 0.5);
 	h_cen = new TH1F("h_cen", "h_cen", 17, -1.5, 15.5);
+	h_cen_rW = new TH1F("h_cen_rW", "h_cen_rW", 17, -1.5, 15.5);
 	for (Int_t i = 1; i < h_cen->GetNbinsX() + 1; i++)
 	{
 		if (i == 1){
 			h_cen->GetXaxis()->SetBinLabel(i, "80-100%");
+			h_cen_rW->GetXaxis()->SetBinLabel(i, "80-100%");
 		}
 
 		else{
 			h_cen->GetXaxis()->SetBinLabel(i, Form("%d-%d%%", 85 - 5 * i, 90 - 5 * i));
+			h_cen_rW->GetXaxis()->SetBinLabel(i, Form("%d-%d%%", 85 - 5 * i, 90 - 5 * i));
 		}
 	}
 	h_RefMult = new TH1F("h_RefMult", "h_RefMult", 250, 0, 250);													   // 参考多重数
@@ -225,12 +231,12 @@ void StPicoDstarMixedMaker::initHists()
 	h_Mee__unlikeSame = new TH1F("h_Mee__unlikeSame", "Mee without #phi_{V} cut;Mee(GeV/c^{2})", 800, 0, 4);
 	h_Mee__unlikeSame__w_PhiV_Cut = new TH1F("h_Mee__unlikeSame__w_PhiV_Cut", "Mee with #phi_{V} cut;Mee(GeV/c^{2})", 800, 0, 4);
 
-	h_Mee_Pt_Cen__unlikeSame = new TH3F("h_Mee_Pt_Cen__unlikeSame", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 5, 0, 5, 16, 0, 16);
-	h_Mee_Pt_Cen__likemm = new TH3F("h_Mee_Pt_Cen__likemm", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 		 800, 0, 4, 5, 0, 5, 16, 0, 16);
-	h_Mee_Pt_Cen__likepp = new TH3F("h_Mee_Pt_Cen__likepp", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 		 800, 0, 4, 5, 0, 5, 16, 0, 16);
-	h_Mee_Pt_Cen__unlikeMixed = new TH3F("h_Mee_Pt_Cen__unlikeMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 5, 0, 5, 16, 0, 16);
-	h_Mee_Pt_Cen__likemmMixed = new TH3F("h_Mee_Pt_Cen__likemmMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 5, 0, 5, 16, 0, 16);
-	h_Mee_Pt_Cen__likeppMixed = new TH3F("h_Mee_Pt_Cen__likeppMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 5, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__unlikeSame = new TH3F("h_Mee_Pt_Cen__unlikeSame", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 500, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__likemm = new TH3F("h_Mee_Pt_Cen__likemm", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 		 800, 0, 4, 500, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__likepp = new TH3F("h_Mee_Pt_Cen__likepp", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 		 800, 0, 4, 500, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__unlikeMixed = new TH3F("h_Mee_Pt_Cen__unlikeMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 500, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__likemmMixed = new TH3F("h_Mee_Pt_Cen__likemmMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 500, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__likeppMixed = new TH3F("h_Mee_Pt_Cen__likeppMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 500, 0, 5, 16, 0, 16);
 } //
 
 Int_t StPicoDstarMixedMaker::Make()
@@ -282,15 +288,16 @@ Int_t StPicoDstarMixedMaker::Make()
 		h_Vx_Vy->Fill(mVx, mVy);
 		h_Vr->Fill(mVr);
 
-		if (fabs(mVpdVz + 999.0) > 1e-2 && fabs(mVpdVz) < 1000.0) // STAR约定：当 VPD 无法重建顶点时，会把 mVpdVz 设为 -999 cm 作为占位标志。
-		{
+		//if (fabs(mVpdVz + 999.0) > 1e-2 && fabs(mVpdVz) < 1000.0) // STAR约定：当 VPD 无法重建顶点时，会把 mVpdVz 设为 -999 cm 作为占位标志。
+		//{
 			h_VpdVz->Fill(mVpdVz);
 			h_VpdVz_Vz->Fill(mVz, mVpdVz);
 			h_VpdVzmVz->Fill(mVpdVz - mVz);
-		}
+		//}
 
 		// 获取多重数
 		Refmult = picoEvent->refMult();			   // 给出的是在线/原始 TPC 多重数（reference multiplicity），未经任何修正
+		mRefmult6 = getRefmult6(picoDst, picoEvent); // 用户离线重算的多重数，满足严格几何与质量要求
 		mRefmult = getRefmult(picoDst, picoEvent); // 用户离线重算的多重数，满足严格几何与质量要求
 
 		h_RefMult->Fill(Refmult);
@@ -298,16 +305,21 @@ Int_t StPicoDstarMixedMaker::Make()
 		h_mRefMult->Fill(mRefmult);
 
 		// 计算该事例的中心度
-		mCen9 = 0;
-		mCen16 = 0;
+		mRefMultCorrUtil->init(mRunId);
+		mRefMultCorrUtil->initEvent(mRefmult6, mVz, picoEvent->ZDCx());
+		Double_t reWeight = mRefMultCorrUtil->getWeight();
+		mCen9 = mRefMultCorrUtil->getCentralityBin9();
+		mCen16 = mRefMultCorrUtil->getCentralityBin16();
+		//mCen9 = 0;
+		//mCen16 = 0;
 
 		// 不同条件cut后的事例数统计
 		Bool_t vzcut = mVz < anaCuts::Vz_up && mVz > anaCuts::Vz_low;
 		Bool_t vrcut = mVr < anaCuts::Vr;
 		Bool_t verrcut = !(fabs(mVx) < anaCuts::Verr && fabs(mVy) < anaCuts::Verr && fabs(mVz) < anaCuts::Verr); // Vx,Vy,Vz<1.0e-5 cm, why? too small that better than resolution.
-		Bool_t vzvpdvzcut = fabs(mVz - mVpdVz) < anaCuts::vzVpdVz;
+		Bool_t vzvpdvzcut = fabs(mVpdVz + 999.0) < 1e-2 || fabs(mVz - mVpdVz) < anaCuts::vzVpdVz;
 		//Bool_t notPileUp = picoEvent->refMult()<picoEvent->btofTrayMultiplicity()*0.36+45;//from kshen
-		Bool_t notPileUp = kTRUE;//mRefMultCorrUtil->passnTofMatchRefmultCut(mRefmult, picoEvent->nBTOFMatch());
+		Bool_t notPileUp = mRefMultCorrUtil->passnTofMatchRefmultCut(mRefmult, picoEvent->nBTOFMatch());
 		Bool_t cen0280cut = mCen16 > -1;
 
 		if (vzcut)
@@ -327,6 +339,7 @@ Int_t StPicoDstarMixedMaker::Make()
 		{
 			mBfield = picoEvent->bField(); // 获取磁场
 			h_cen->Fill(mCen16);		   // 填充中心度
+			h_cen_rW->Fill(mCen16, reWeight); // 填充中心度（带权重）
 			// ******************以下分析均基于0~80%中心度***********************
 			if (!cen0280cut)
 				return kStOK;
@@ -420,7 +433,7 @@ Int_t StPicoDstarMixedMaker::Make()
 				Double_t nSigmaEcorrfactor = getNSigmaECorr(mom);
 				Double_t nSigmaEcorr = nSigmaE - nSigmaEcorrfactor;
 				h_nSigmaEcorr_P->Fill(mom.Mag(), nSigmaEcorr);
-				//Double_t temp = nSigmaEcorr; nSigmaEcorr = nSigmaE; nSigmaE = temp;//将nsigmaE和nsigmaEcorr置换
+				Double_t temp = nSigmaEcorr; nSigmaEcorr = nSigmaE; nSigmaE = temp;//将nsigmaE和nsigmaEcorr置换
 
 				// Electrons IDentification
 				Bool_t isTOFElectron__1 = kFALSE;
@@ -446,9 +459,9 @@ Int_t StPicoDstarMixedMaker::Make()
 				}
 				// group 1				
 				if (mom.Mag() <= 1.0)
-					isTPCElectron__1 = nSigmaE < 3.0 && nSigmaE > (2.5 * mom.Mag() - 3.5);
+					isTPCElectron__1 = nSigmaE < 3.0 && nSigmaE > (2.5 * mom.Mag() - 3.55);
 				if (mom.Mag() > 1.0)
-					isTPCElectron__1 = nSigmaE < 3.0 && nSigmaE > -1.0;
+					isTPCElectron__1 = nSigmaE < 3.0 && nSigmaE > -1.25;
 				// Fill Histogram
 				// group 1
 				if (mom.Perp() > 0.2 && fabs(mom.Eta()) < anaCuts::Eta)
@@ -467,12 +480,6 @@ Int_t StPicoDstarMixedMaker::Make()
 
 				if (isElectronRegion1)//group-1
 				{
-					h_Pt_Cen_nSigmaE->Fill(mom.Perp(), mCen16, nSigmaE);
-					h_Eta_Cen_nSigmaE->Fill(mom.Eta(), mCen16, nSigmaE);
-					h_Phi_Cen_nSigmaE->Fill(mom.Phi(), mCen16, nSigmaE);
-					h_Pt_Cen_nSigmaEcorr->Fill(mom.Perp(), mCen16, nSigmaEcorr);
-					h_Eta_Cen_nSigmaEcorr->Fill(mom.Eta(), mCen16, nSigmaEcorr);
-					h_Phi_Cen_nSigmaEcorr->Fill(mom.Phi(), mCen16, nSigmaEcorr);
 					if (trk->charge() < 0) // electron
 					{
 						particleinfo.charge = trk->charge();
@@ -567,12 +574,12 @@ Int_t StPicoDstarMixedMaker::Make()
 			{
 				if (positroninfo[x].isPureE)
 				{
-					h_Pt_Cen_nSigmaE->Fill(positroninfo[x].pt, mCen16, positroninfo[x].nSigmaE);
-					h_Eta_Cen_nSigmaE->Fill(positroninfo[x].eta, mCen16, positroninfo[x].nSigmaE);
-					h_Phi_Cen_nSigmaE->Fill(positroninfo[x].phi, mCen16, positroninfo[x].nSigmaE);
-					h_Pt_Cen_nSigmaEcorr->Fill(positroninfo[x].pt, mCen16, positroninfo[x].nSigmaEcorr);
-					h_Eta_Cen_nSigmaEcorr->Fill(positroninfo[x].eta, mCen16, positroninfo[x].nSigmaEcorr);
-					h_Phi_Cen_nSigmaEcorr->Fill(positroninfo[x].phi, mCen16, positroninfo[x].nSigmaEcorr);
+					h_Pt_Cen_nSigmaE->Fill(positroninfo[x].pt, mCen16, positroninfo[x].nSigmaE, reWeight);
+					h_Eta_Cen_nSigmaE->Fill(positroninfo[x].eta, mCen16, positroninfo[x].nSigmaE, reWeight);
+					h_Phi_Cen_nSigmaE->Fill(positroninfo[x].phi, mCen16, positroninfo[x].nSigmaE, reWeight);
+					h_Pt_Cen_nSigmaEcorr->Fill(positroninfo[x].pt, mCen16, positroninfo[x].nSigmaEcorr, reWeight);
+					h_Eta_Cen_nSigmaEcorr->Fill(positroninfo[x].eta, mCen16, positroninfo[x].nSigmaEcorr, reWeight);
+					h_Phi_Cen_nSigmaEcorr->Fill(positroninfo[x].phi, mCen16, positroninfo[x].nSigmaEcorr, reWeight);
 				}
 				if (!positroninfo[x].isPhotonicE)
 				{
@@ -587,12 +594,12 @@ Int_t StPicoDstarMixedMaker::Make()
 			{
 				if (electroninfo[x].isPureE)
 				{
-					h_Pt_Cen_nSigmaE->Fill(electroninfo[x].pt, mCen16, electroninfo[x].nSigmaE);
-					h_Eta_Cen_nSigmaE->Fill(electroninfo[x].eta, mCen16, electroninfo[x].nSigmaE);
-					h_Phi_Cen_nSigmaE->Fill(electroninfo[x].phi, mCen16, electroninfo[x].nSigmaE);
-					h_Pt_Cen_nSigmaEcorr->Fill(electroninfo[x].pt, mCen16, electroninfo[x].nSigmaEcorr);
-					h_Eta_Cen_nSigmaEcorr->Fill(electroninfo[x].eta, mCen16, electroninfo[x].nSigmaEcorr);
-					h_Phi_Cen_nSigmaEcorr->Fill(electroninfo[x].phi, mCen16, electroninfo[x].nSigmaEcorr);
+					h_Pt_Cen_nSigmaE->Fill(electroninfo[x].pt, mCen16, electroninfo[x].nSigmaE, reWeight);
+					h_Eta_Cen_nSigmaE->Fill(electroninfo[x].eta, mCen16, electroninfo[x].nSigmaE, reWeight);
+					h_Phi_Cen_nSigmaE->Fill(electroninfo[x].phi, mCen16, electroninfo[x].nSigmaE, reWeight);
+					h_Pt_Cen_nSigmaEcorr->Fill(electroninfo[x].pt, mCen16, electroninfo[x].nSigmaEcorr, reWeight);
+					h_Eta_Cen_nSigmaEcorr->Fill(electroninfo[x].eta, mCen16, electroninfo[x].nSigmaEcorr, reWeight);
+					h_Phi_Cen_nSigmaEcorr->Fill(electroninfo[x].phi, mCen16, electroninfo[x].nSigmaEcorr, reWeight);
 				}
 				if (!electroninfo[x].isPhotonicE)
 				{
@@ -632,7 +639,7 @@ Int_t StPicoDstarMixedMaker::Make()
 						h_Rapidity__unlikeSame->Fill(eepair.Rapidity());
 						if (fabs(eepair.Rapidity()) <= 1) // 为什么需要在中心快度区？
 						{
-							h_Mee_Pt_Cen__unlikeSame->Fill(eepair.M(), eepair.Perp(), mCen16);
+							h_Mee_Pt_Cen__unlikeSame->Fill(eepair.M(), eepair.Perp(), mCen16, reWeight);
 						}
 					}
 				}
@@ -659,7 +666,7 @@ Int_t StPicoDstarMixedMaker::Make()
 					{
 						if (fabs(eepair.Rapidity()) <= 1) // 判断重建的粒子是否在中心快度区，为什么需要在中心快度区？
 						{
-							h_Mee_Pt_Cen__likemm->Fill(eepair.M(), eepair.Perp(), mCen16);
+							h_Mee_Pt_Cen__likemm->Fill(eepair.M(), eepair.Perp(), mCen16, reWeight);
 						}
 					}
 				}
@@ -685,7 +692,7 @@ Int_t StPicoDstarMixedMaker::Make()
 					{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
-							h_Mee_Pt_Cen__likepp->Fill(eepair.M(), eepair.Perp(), mCen16);
+							h_Mee_Pt_Cen__likepp->Fill(eepair.M(), eepair.Perp(), mCen16, reWeight);
 						}
 					}
 				}
@@ -731,7 +738,7 @@ Int_t StPicoDstarMixedMaker::Make()
 						{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
-							h_Mee_Pt_Cen__unlikeMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
+							h_Mee_Pt_Cen__unlikeMixed->Fill(eepair.M(), eepair.Perp(), mCen16, reWeight);
 						}
 						}
 					}
@@ -747,7 +754,7 @@ Int_t StPicoDstarMixedMaker::Make()
 						{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
-							h_Mee_Pt_Cen__unlikeMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
+							h_Mee_Pt_Cen__unlikeMixed->Fill(eepair.M(), eepair.Perp(), mCen16, reWeight);
 						}
 						}
 					}
@@ -763,7 +770,7 @@ Int_t StPicoDstarMixedMaker::Make()
 						{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
-							h_Mee_Pt_Cen__likeppMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
+							h_Mee_Pt_Cen__likeppMixed->Fill(eepair.M(), eepair.Perp(), mCen16, reWeight);
 						}
 						}
 					}
@@ -779,7 +786,7 @@ Int_t StPicoDstarMixedMaker::Make()
 						{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
-							h_Mee_Pt_Cen__likemmMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
+							h_Mee_Pt_Cen__likemmMixed->Fill(eepair.M(), eepair.Perp(), mCen16, reWeight);
 						}
 						}
 					}
@@ -800,6 +807,7 @@ Int_t StPicoDstarMixedMaker::Finish()
 	h_passEvtcut->Write();
 	h_passTrkcut->Write();
 	h_cen->Write();
+	h_cen_rW->Write();
 	h_RefMult->Write();
 
 	// write the hists
@@ -1034,7 +1042,7 @@ Double_t StPicoDstarMixedMaker::getNSigmaECorr(TVector3 mom) const
 	if (phiBin < 0 || phiBin >= 64)
 		return 0.;
 
-	return 0;
+	return anaCuts::etaCorr_24ia[cen8Bin][etaBin] + anaCuts::phiCorr_24ia[cen8Bin][phiBin] - anaCuts::phiAverageCorr_24ia[cen8Bin];
 }
 
 Double_t StPicoDstarMixedMaker::getNSigmaPiKPCorr(Int_t num_variable, TVector3 mom) const
@@ -1061,4 +1069,33 @@ void StPicoDstarMixedMaker::copyCurrentToBuffer()
 		buffer_eMinus[magBufferIndex][cenBufferIndex][vzBufferIndex][eventIndex][i] = current_electron[i];
 	if (nEventsInBuffer[magBufferIndex][cenBufferIndex][vzBufferIndex] < kMaxEventsInBuffer)
 		nEventsInBuffer[magBufferIndex][cenBufferIndex][vzBufferIndex]++;
+}
+
+Int_t StPicoDstarMixedMaker::getRefmult6(StPicoDst const *const picoDst, StPicoEvent const *const picoEvent) const
+{
+	Int_t refMult6 = 0;
+	for (UInt_t iTrk = 0; iTrk < picoDst->numberOfTracks(); iTrk++) // UInt_t是无符号整型
+	{
+		StPicoTrack *track = picoDst->track(iTrk);
+		if (!track)
+			continue;
+		if (!track->isPrimary())
+			continue; // 只考虑主要径迹
+					  // 只考虑通过track QA cuts的径迹
+		if (TMath::Abs(track->pMom().Eta()) > 1.5)
+			continue; // if ( TMath::Abs( track->pMom().Eta() ) > anaCuts::Eta ) continue;
+		if (track->pPt() >= 2.0)
+			continue; // 因为统计量太少？
+		if (track->pPt() <= 0.2)
+			continue; // if (track->pPt() <= anaCuts::GPt) continue;//
+		if (track->gDCA(picoEvent->primaryVertex()).Mag() >= 3.)
+			continue;
+		if (track->nHitsFit() <= 15)
+			continue;
+		if ((Double_t)track->nHitsFit() / track->nHitsPoss() <= 0.52)
+			continue;
+		refMult6++;
+	}
+	// cout << "RefMult6: " << refMult6 << endl;
+	return refMult6;
 }
