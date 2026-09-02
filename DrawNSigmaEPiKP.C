@@ -1,7 +1,7 @@
 //---------------------从dAu200GeV_2016.root中提取直方图，并进行设置更改和元素添加----------------------
 #include "../2021_OO200/someFunction.h"
 #include "StRoot/dAu.2021.SL23d/StAnaCuts.h"
-void DrawNSigmaEPiKP(TString inFilename = "roots/5_20260831_dAu2021_TOF_newCenDefin_keepSamewithzih.root", Int_t number = 5) //
+void DrawNSigmaEPiKP(TString inFilename = "roots/6_20260831_He3Au2014_TOF.root", Int_t number = 6) //
 {
 	// 从root文件中导入待拟合的直方图
 	TFile *inFile = new TFile(inFilename);
@@ -86,7 +86,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/5_20260831_dAu2021_TOF_newCenDe
 
 		c_temp->SaveAs(Form("roots/%d_temp.png", number));
 	}
-	if (1) // h_passEvtcut,h_passTrkcut,h_nHitsFit_Pt_Eta,h_nHitsDEdx_Pt_Eta,h_pDca_Pt_Eta
+	if (0) // h_passEvtcut,h_passTrkcut,h_nHitsFit_Pt_Eta,h_nHitsDEdx_Pt_Eta,h_pDca_Pt_Eta
 	{
 		// 投影
 		TH2F *h_nHitsFit_Pt = (TH2F *)h_nHitsFit_Pt_Eta->Project3D("zx");if(!h_nHitsFit_Pt) {cout<<"h_nHitsFit_Pt not found! Exiting..."<<endl; return;}
@@ -378,7 +378,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/5_20260831_dAu2021_TOF_newCenDe
 		c_temp->SaveAs(Form("roots/%d_PhiV_Check.png", number));
 	}
 
-	if (1) // EID in group1(pT>0.2, |eta|<1)
+	if (0) // EID in group1(pT>0.2, |eta|<1)
 	{
 		// 设置直方图格式
 		// 去除误差条，设置Marker形状颜色，设置线条颜色，设置图例，设置坐标轴标题，设置对数Y坐标）

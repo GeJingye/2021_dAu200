@@ -165,9 +165,11 @@ class StPicoDstarMixedMaker : public StMaker
 	TH1F* h_Eta__TOFMatch;
 	TH1F* h_Phi__TOFMatch;
     // calibrate
+    TH3F* h_P_Cen_nSigmaE;
 	TH3F* h_Pt_Cen_nSigmaE;
 	TH3F* h_Eta_Cen_nSigmaE;
 	TH3F* h_Phi_Cen_nSigmaE;
+    TH3F* h_P_Cen_nSigmaEcorr;
 	TH3F* h_Pt_Cen_nSigmaEcorr;
 	TH3F* h_Eta_Cen_nSigmaEcorr;
 	TH3F* h_Phi_Cen_nSigmaEcorr;

@@ -40,6 +40,10 @@ class ParticleInfo
 	Float_t eta;
 	Float_t phi;
 	Float_t p;
+    Float_t nHitsFit;
+    Float_t nHitsDedx;
+    Float_t nHitsMax;
+    Float_t DCA;
 	Float_t nSigmaE;
     Float_t nSigmaEcorr;
 	Float_t beta;
@@ -147,6 +151,8 @@ class StPicoDstarMixedMaker : public StMaker
 	TH2F* h_nSigmaProton_P;
 
     TH1F* h_pDca;
+    TH1F* h_pDca_HFTTrack;
+    TH1F* h_pDca_HFT;
     TH1F* h_ppT;
 	TH1F* h_pP;
 	TH2F* h_pP_ppT;
@@ -183,6 +189,29 @@ class StPicoDstarMixedMaker : public StMaker
 	TH1F* h_pT__electrons_w_PhiV_Cut;
 	TH1F* h_eta__electrons_w_PhiV_Cut;
 	TH1F* h_phi__electrons_w_PhiV_Cut;
+
+    TH1F* h_pT__positrons_in_PhiV_Cut;
+    TH1F* h_eta__positrons_in_PhiV_Cut;
+    TH1F* h_phi__positrons_in_PhiV_Cut;
+    TH1F* h_nHitsFit__positrons_in_PhiV_Cut;
+    TH1F* h_nHitsDedx__positrons_in_PhiV_Cut;
+    TH1F* h_nHitsMax__positrons_in_PhiV_Cut;
+    TH1F* h_DCA__positrons_in_PhiV_Cut;
+    TH1F* h_nHitsFit__positrons_w_PhiV_Cut;
+    TH1F* h_nHitsDedx__positrons_w_PhiV_Cut;
+    TH1F* h_nHitsMax__positrons_w_PhiV_Cut;
+    TH1F* h_DCA__positrons_w_PhiV_Cut;
+    TH1F* h_pT__electrons_in_PhiV_Cut;
+    TH1F* h_eta__electrons_in_PhiV_Cut;
+    TH1F* h_phi__electrons_in_PhiV_Cut;
+    TH1F* h_nHitsFit__electrons_in_PhiV_Cut;
+    TH1F* h_nHitsDedx__electrons_in_PhiV_Cut;
+    TH1F* h_nHitsMax__electrons_in_PhiV_Cut;
+    TH1F* h_DCA__electrons_in_PhiV_Cut;
+    TH1F* h_nHitsFit__electrons_w_PhiV_Cut;
+    TH1F* h_nHitsDedx__electrons_w_PhiV_Cut;
+    TH1F* h_nHitsMax__electrons_w_PhiV_Cut;
+    TH1F* h_DCA__electrons_w_PhiV_Cut;
 
 	TH1F* h_Rapidity__unlikeSame;
     TH2F* h_Mee_PhiV__unlikeSame;

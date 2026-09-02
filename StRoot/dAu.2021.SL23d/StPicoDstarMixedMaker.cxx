@@ -195,9 +195,11 @@ void StPicoDstarMixedMaker::initHists()
 	h_m2 = new TH1F("h_m2", "m^{2};m^{2};counts", 2000, -0.5, 1.5);
 	h_m2_Pc = new TH2F("h_m2_Pc", "m^{2} vs p*q;p*q (GeV/c);m^{2} (GeV/c^{2})^{2}", 1000, -5, 5, 2000, -0.5, 1.5);
 	// nSigmaE correction
+	h_P_Cen_nSigmaE = new TH3F("h_P_Cen_nSigmaE", "n#sigma_{e} vs p vs Cen;p (GeV/c);Cen;n#sigma_{e}", 500, 0, 5, 16, 0, 16, 2000, -10, 10);
 	h_Pt_Cen_nSigmaE = new TH3F("h_Pt_Cen_nSigmaE", "n#sigma_{e} vs p_{T} vs Cen;p_{T} (GeV/c);Cen;n#sigma_{e}", 500, 0, 5, 16, 0, 16, 2000, -10, 10);
 	h_Eta_Cen_nSigmaE = new TH3F("h_Eta_Cen_nSigmaE", "n#sigma_{e} vs #eta vs Cen;#eta;Cen;n#sigma_{e}", 400, -2.0, 2.0, 16, 0, 16, 2000, -10, 10);
 	h_Phi_Cen_nSigmaE = new TH3F("h_Phi_Cen_nSigmaE", "n#sigma_{e} vs #phi vs Cen;#phi;Cen;n#sigma_{e}", 640, -3.2, 3.2, 16, 0, 16, 2000, -10, 10);
+	h_P_Cen_nSigmaEcorr = new TH3F("h_P_Cen_nSigmaEcorr", "corrected n#sigma_{e} vs p vs Cen;p (GeV/c);Cen;corrected n#sigma_{e}", 500, 0, 5, 16, 0, 16, 2000, -10, 10);
 	h_Pt_Cen_nSigmaEcorr = new TH3F("h_Pt_Cen_nSigmaEcorr", "corrected n#sigma_{e} vs p_{T} vs Cen;p_{T} (GeV/c);corrected n#sigma_{e}", 500, 0, 5, 16, 0, 16, 2000, -10, 10);
 	h_Eta_Cen_nSigmaEcorr = new TH3F("h_Eta_Cen_nSigmaEcorr", "corrected n#sigma_{e} vs #eta vs Cen;#eta;Cen;corrected n#sigma_{e}", 400, -2.0, 2.0, 16, 0, 16, 2000, -10, 10);
 	h_Phi_Cen_nSigmaEcorr = new TH3F("h_Phi_Cen_nSigmaEcorr", "corrected n#sigma_{e} vs #phi vs Cen;#phi;Cen;corrected n#sigma_{e}", 640, -3.2, 3.2, 16, 0, 16, 2000, -10, 10);
@@ -574,9 +576,11 @@ Int_t StPicoDstarMixedMaker::Make()
 			{
 				if (positroninfo[x].isPureE)
 				{
+					h_P_Cen_nSigmaE->Fill(positroninfo[x].p, mCen16, positroninfo[x].nSigmaE, reWeight);
 					h_Pt_Cen_nSigmaE->Fill(positroninfo[x].pt, mCen16, positroninfo[x].nSigmaE, reWeight);
 					h_Eta_Cen_nSigmaE->Fill(positroninfo[x].eta, mCen16, positroninfo[x].nSigmaE, reWeight);
 					h_Phi_Cen_nSigmaE->Fill(positroninfo[x].phi, mCen16, positroninfo[x].nSigmaE, reWeight);
+					h_P_Cen_nSigmaEcorr->Fill(positroninfo[x].p, mCen16, positroninfo[x].nSigmaEcorr, reWeight);
 					h_Pt_Cen_nSigmaEcorr->Fill(positroninfo[x].pt, mCen16, positroninfo[x].nSigmaEcorr, reWeight);
 					h_Eta_Cen_nSigmaEcorr->Fill(positroninfo[x].eta, mCen16, positroninfo[x].nSigmaEcorr, reWeight);
 					h_Phi_Cen_nSigmaEcorr->Fill(positroninfo[x].phi, mCen16, positroninfo[x].nSigmaEcorr, reWeight);
@@ -594,9 +598,11 @@ Int_t StPicoDstarMixedMaker::Make()
 			{
 				if (electroninfo[x].isPureE)
 				{
+					h_P_Cen_nSigmaE->Fill(electroninfo[x].p, mCen16, electroninfo[x].nSigmaE, reWeight);
 					h_Pt_Cen_nSigmaE->Fill(electroninfo[x].pt, mCen16, electroninfo[x].nSigmaE, reWeight);
 					h_Eta_Cen_nSigmaE->Fill(electroninfo[x].eta, mCen16, electroninfo[x].nSigmaE, reWeight);
 					h_Phi_Cen_nSigmaE->Fill(electroninfo[x].phi, mCen16, electroninfo[x].nSigmaE, reWeight);
+					h_P_Cen_nSigmaEcorr->Fill(electroninfo[x].p, mCen16, electroninfo[x].nSigmaEcorr, reWeight);
 					h_Pt_Cen_nSigmaEcorr->Fill(electroninfo[x].pt, mCen16, electroninfo[x].nSigmaEcorr, reWeight);
 					h_Eta_Cen_nSigmaEcorr->Fill(electroninfo[x].eta, mCen16, electroninfo[x].nSigmaEcorr, reWeight);
 					h_Phi_Cen_nSigmaEcorr->Fill(electroninfo[x].phi, mCen16, electroninfo[x].nSigmaEcorr, reWeight);
@@ -852,9 +858,11 @@ Int_t StPicoDstarMixedMaker::Finish()
 	h_nSigmaKaon_P->Write();
 	h_nSigmaProton_P->Write();
 
+	h_P_Cen_nSigmaE->Write();
 	h_Pt_Cen_nSigmaE->Write();
 	h_Eta_Cen_nSigmaE->Write();
 	h_Phi_Cen_nSigmaE->Write();
+	h_P_Cen_nSigmaEcorr->Write();
 	h_Pt_Cen_nSigmaEcorr->Write();
 	h_Eta_Cen_nSigmaEcorr->Write();
 	h_Phi_Cen_nSigmaEcorr->Write();
@@ -1042,7 +1050,7 @@ Double_t StPicoDstarMixedMaker::getNSigmaECorr(TVector3 mom) const
 	if (phiBin < 0 || phiBin >= 64)
 		return 0.;
 
-	return anaCuts::etaCorr_24ia[cen8Bin][etaBin] + anaCuts::phiCorr_24ia[cen8Bin][phiBin] - anaCuts::phiAverageCorr_24ia[cen8Bin];
+	return anaCuts::etaCorr[cen8Bin][etaBin] + anaCuts::phiCorr[cen8Bin][phiBin] - anaCuts::phiAverageCorr[cen8Bin];
 }
 
 Double_t StPicoDstarMixedMaker::getNSigmaPiKPCorr(Int_t num_variable, TVector3 mom) const

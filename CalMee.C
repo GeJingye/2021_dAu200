@@ -1,7 +1,7 @@
 //---------------------从dAu200GeV.root中提取直方图，并进行设置更改和元素添加----------------------
 //Diff. with OO/CalMee.C: 1.没有混合背景；2.没有Rotation背景；3.没有UM-LM test
 #include "../2021_OO200/someFunction.h"
-void CalMee(TString inFileName = "roots/5_20260831_dAu2021_TOF_newCenDefin_keepSamewithzih.root", Int_t number = 5)
+void CalMee(TString inFileName = "roots/7_20260902_He3Au2014_TOF_cutPEbyTagSingle.root", Int_t number = 7)
 {
 	//vector<Double_t> Mee__newEdges = {0.25,0.27,0.28,0.29,0.30,0.31,0.32,0.33,0.34,0.35,0.36,0.37, 0.38,0.39, 0.40,0.41,0.42,0.6};//pion mass
 	// 定义新的bin边界
@@ -101,8 +101,8 @@ void CalMee(TString inFileName = "roots/5_20260831_dAu2021_TOF_newCenDefin_keepS
 	h_Mee__LikeSame_PSACcorr_Rebin->Multiply(h_Mee__CorrLS_Rebin);
 
 	// 3-D Unlike-MixedEvent背景
-	Float_t NR_low_M = 0.5, NR_up_M = 2, NR_low_pt = 0, NR_up_pt = 2;//d+Au
-	//Float_t NR_low_M = 0.5, NR_up_M = 2.5, NR_low_pt = 0, NR_up_pt = 2;//He3Au2014
+	//Float_t NR_low_M = 0.5, NR_up_M = 2, NR_low_pt = 0, NR_up_pt = 2;//d+Au
+	Float_t NR_low_M = 0.5, NR_up_M = 1, NR_low_pt = 0, NR_up_pt = 1;//He3Au2014
 	Float_t scale = ComputeMixEventScale(h_Mee_Pt_Cen__likepp_Rebin, h_Mee_Pt_Cen__likemm_Rebin,h_Mee_Pt_Cen__likeppMixed_Rebin, h_Mee_Pt_Cen__likemmMixed_Rebin,h_Mee_Pt_Cen__unlikeMixed_Rebin, NR_low_M, NR_up_M, NR_low_pt, NR_up_pt, 1, 16);
 	cout << "scale: " << scale << endl;
 	//scale=0.0149;//p+Au_2015
@@ -419,7 +419,7 @@ void CalMee(TString inFileName = "roots/5_20260831_dAu2021_TOF_newCenDefin_keepS
 		
 		c_Pt->SaveAs(Form("roots/%d_RawSignal_pT_0_5_Cen_0_80.png", number));
 	}
-	if (1)//画信号，背景1/2，信号-背景1/2，背景1/背景2
+	if (1)// 画信号，背景1/2，信号-背景1/2，背景1/背景2
 	{
 		//设置直方图格式
 		h_Mee__unlikeSame_Rebin->SetLineColor(1);			h_Mee__unlikeSame_Rebin->SetMarkerStyle(kOpenCircle);			h_Mee__unlikeSame_Rebin->SetMarkerColor(1); 		h_Mee__unlikeSame_Rebin->SetMarkerSize(0.5);
