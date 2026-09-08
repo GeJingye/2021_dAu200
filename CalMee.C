@@ -1,7 +1,7 @@
 //---------------------从dAu200GeV.root中提取直方图，并进行设置更改和元素添加----------------------
 //Diff. with OO/CalMee.C: 1.没有混合背景；2.没有Rotation背景；3.没有UM-LM test
 #include "../2021_OO200/someFunction.h"
-void CalMee(TString inFileName = "roots/7_20260902_He3Au2014_TOF_cutPEbyTagSingle.root", Int_t number = 7)
+void CalMee(TString inFileName = "roots/10_20260905_He3Au2014_TOF_cutPEbyTagSingle_onlyCentralTgForMixed.root", Int_t number = 10)
 {
 	//vector<Double_t> Mee__newEdges = {0.25,0.27,0.28,0.29,0.30,0.31,0.32,0.33,0.34,0.35,0.36,0.37, 0.38,0.39, 0.40,0.41,0.42,0.6};//pion mass
 	// 定义新的bin边界
@@ -102,14 +102,31 @@ void CalMee(TString inFileName = "roots/7_20260902_He3Au2014_TOF_cutPEbyTagSingl
 
 	// 3-D Unlike-MixedEvent背景
 	//Float_t NR_low_M = 0.5, NR_up_M = 2, NR_low_pt = 0, NR_up_pt = 2;//d+Au
-	Float_t NR_low_M = 0.5, NR_up_M = 1, NR_low_pt = 0, NR_up_pt = 1;//He3Au2014
+	Float_t NR_low_M = 0.5, NR_up_M = 3, NR_low_pt = 0, NR_up_pt = 2;//He3Au2014 Central
 	Float_t scale = ComputeMixEventScale(h_Mee_Pt_Cen__likepp_Rebin, h_Mee_Pt_Cen__likemm_Rebin,h_Mee_Pt_Cen__likeppMixed_Rebin, h_Mee_Pt_Cen__likemmMixed_Rebin,h_Mee_Pt_Cen__unlikeMixed_Rebin, NR_low_M, NR_up_M, NR_low_pt, NR_up_pt, 1, 16);
 	cout << "scale: " << scale << endl;
 	//scale=0.0149;//p+Au_2015
+	//scale=0.01126;//He3Au2014 Central
+	//scale=0.0117;//He3Au2014 ZDCE
 	// 3-D Unlike-MixedEvent背景
 	h_Mee_Pt_Cen__unlikeMixed_Rebin->Scale(scale);
 	// 1-D Unlike-MixedEvent背景
-	h_Mee__unlikeMixed_Rebin->Scale(scale);
+	// 构造5个不同scale的1-D UM背景：scale-5%, scale-3%, scale(原值), scale+3%, scale+5%
+	Float_t scale1 = scale * 0.95;
+	Float_t scale2 = scale * 0.97;
+	Float_t scale3 = scale;
+	Float_t scale4 = scale * 1.03;
+	Float_t scale5 = scale * 1.05;
+	TH1F* h_Mee__unlikeMixed_Rebin_scale1 = (TH1F*)h_Mee__unlikeMixed_Rebin->Clone("h_Mee__unlikeMixed_Rebin_scale1");
+	TH1F* h_Mee__unlikeMixed_Rebin_scale2 = (TH1F*)h_Mee__unlikeMixed_Rebin->Clone("h_Mee__unlikeMixed_Rebin_scale2");
+	TH1F* h_Mee__unlikeMixed_Rebin_scale4 = (TH1F*)h_Mee__unlikeMixed_Rebin->Clone("h_Mee__unlikeMixed_Rebin_scale4");
+	TH1F* h_Mee__unlikeMixed_Rebin_scale5 = (TH1F*)h_Mee__unlikeMixed_Rebin->Clone("h_Mee__unlikeMixed_Rebin_scale5");
+	h_Mee__unlikeMixed_Rebin_scale1->Scale(scale1);
+	h_Mee__unlikeMixed_Rebin_scale2->Scale(scale2);
+	h_Mee__unlikeMixed_Rebin_scale4->Scale(scale4);
+	h_Mee__unlikeMixed_Rebin_scale5->Scale(scale5);
+	// 原始1-D UM背景按原scale(scale3)缩放
+	h_Mee__unlikeMixed_Rebin->Scale(scale3);
 
 	// 去除背景，还原信号
 	h_Mee_Pt_Cen__rmLS_Rebin->Add(h_Mee_Pt_Cen__unlikeSame_Rebin, h_Mee_Pt_Cen__LikeSame_Rebin, 1.0, -1.0);
@@ -117,11 +134,20 @@ void CalMee(TString inFileName = "roots/7_20260902_He3Au2014_TOF_cutPEbyTagSingl
 	h_Mee__rmLS_Rebin->Add(h_Mee__unlikeSame_Rebin, h_Mee__LikeSame_Rebin, 1.0, -1.0);
 	h_Mee__rmLS_PSACcorr_Rebin->Add(h_Mee__unlikeSame_Rebin, h_Mee__LikeSame_PSACcorr_Rebin, 1.0, -1.0);
 	h_Mee__rmUM_Rebin->Add(h_Mee__unlikeSame_Rebin, h_Mee__unlikeMixed_Rebin, 1.0, -1.0);
+	// 用不同scale的1-D UM背景构造对应的信号 (scale3即原scale，对应h_Mee__rmUM_Rebin)
+	TH1F* h_Mee__rmUM_Rebin_scale1 = (TH1F*)h_Mee__unlikeSame_Rebin->Clone("h_Mee__rmUM_Rebin_scale1");	h_Mee__rmUM_Rebin_scale1->Add(h_Mee__unlikeMixed_Rebin_scale1, -1.0);
+	TH1F* h_Mee__rmUM_Rebin_scale2 = (TH1F*)h_Mee__unlikeSame_Rebin->Clone("h_Mee__rmUM_Rebin_scale2");	h_Mee__rmUM_Rebin_scale2->Add(h_Mee__unlikeMixed_Rebin_scale2, -1.0);
+	TH1F* h_Mee__rmUM_Rebin_scale4 = (TH1F*)h_Mee__unlikeSame_Rebin->Clone("h_Mee__rmUM_Rebin_scale4");	h_Mee__rmUM_Rebin_scale4->Add(h_Mee__unlikeMixed_Rebin_scale4, -1.0);
+	TH1F* h_Mee__rmUM_Rebin_scale5 = (TH1F*)h_Mee__unlikeSame_Rebin->Clone("h_Mee__rmUM_Rebin_scale5");	h_Mee__rmUM_Rebin_scale5->Add(h_Mee__unlikeMixed_Rebin_scale5, -1.0);
 
 	//计算dN/dM
 	ResetBinContent(h_Mee__rmLS_Rebin);
 	ResetBinContent(h_Mee__rmLS_PSACcorr_Rebin);
 	ResetBinContent(h_Mee__rmUM_Rebin);
+	ResetBinContent(h_Mee__rmUM_Rebin_scale1);
+	ResetBinContent(h_Mee__rmUM_Rebin_scale2);
+	ResetBinContent(h_Mee__rmUM_Rebin_scale4);
+	ResetBinContent(h_Mee__rmUM_Rebin_scale5);
 	ResetBinContent(h_Mee__unlikeSame_Rebin);
 	ResetBinContent(h_Mee__LikeSame_Rebin);
 	ResetBinContent(h_Mee__LikeSame_PSACcorr_Rebin);
@@ -395,7 +421,7 @@ void CalMee(TString inFileName = "roots/7_20260902_He3Au2014_TOF_cutPEbyTagSingl
 		c1->SaveAs(Form("roots/%d_QA_Mee_pT.png", number));
 	}
 	
-	if (1)// 画一张图，pt范围是0-0.05GeV/c，Mee范围是0-4GeV/c^2
+	if (0)// 画一张图，pt范围是0-0.05GeV/c，Mee范围是0-4GeV/c^2
 	{
 		h_Mee_Pt_Cen__unlikeSame_Rebin->SetLineColor(1);		h_Mee_Pt_Cen__unlikeSame_Rebin->SetMarkerStyle(kOpenCircle);	h_Mee_Pt_Cen__unlikeSame_Rebin->SetMarkerColor(1); 		h_Mee_Pt_Cen__unlikeSame_Rebin->SetMarkerSize(0.1);
 		h_Mee_Pt_Cen__LikeSame_Rebin->SetLineColor(2);			h_Mee_Pt_Cen__LikeSame_Rebin->SetMarkerStyle(kOpenSquare);		h_Mee_Pt_Cen__LikeSame_Rebin->SetMarkerColor(2); 		h_Mee_Pt_Cen__LikeSame_Rebin->SetMarkerSize(0.1);
@@ -419,7 +445,7 @@ void CalMee(TString inFileName = "roots/7_20260902_He3Au2014_TOF_cutPEbyTagSingl
 		
 		c_Pt->SaveAs(Form("roots/%d_RawSignal_pT_0_5_Cen_0_80.png", number));
 	}
-	if (1)// 画信号，背景1/2，信号-背景1/2，背景1/背景2
+	if (0)// 画信号，背景1/2，信号-背景1/2，背景1/背景2
 	{
 		//设置直方图格式
 		h_Mee__unlikeSame_Rebin->SetLineColor(1);			h_Mee__unlikeSame_Rebin->SetMarkerStyle(kOpenCircle);			h_Mee__unlikeSame_Rebin->SetMarkerColor(1); 		h_Mee__unlikeSame_Rebin->SetMarkerSize(0.5);
@@ -602,5 +628,83 @@ void CalMee(TString inFileName = "roots/7_20260902_He3Au2014_TOF_cutPEbyTagSingl
 
 
 		c2->SaveAs(Form("roots/%d_Mee_PSAC.png", number));
+	}
+
+	if (0)// 不同scale的1-D UM背景对信号(US-UM)的影响
+	{
+		// 设置直方图格式
+		h_Mee__rmLS_PSACcorr_Rebin->SetLineColor(9);	h_Mee__rmLS_PSACcorr_Rebin->SetMarkerStyle(kOpenCross);		h_Mee__rmLS_PSACcorr_Rebin->SetMarkerColor(9);		h_Mee__rmLS_PSACcorr_Rebin->SetMarkerSize(0.1);
+		h_Mee__rmUM_Rebin_scale1->SetLineColor(3);		h_Mee__rmUM_Rebin_scale1->SetMarkerStyle(kOpenStar);		h_Mee__rmUM_Rebin_scale1->SetMarkerColor(3);		h_Mee__rmUM_Rebin_scale1->SetMarkerSize(0.1);
+		h_Mee__rmUM_Rebin_scale2->SetLineColor(3);		h_Mee__rmUM_Rebin_scale2->SetMarkerStyle(kOpenStar);		h_Mee__rmUM_Rebin_scale2->SetMarkerColor(3);		h_Mee__rmUM_Rebin_scale2->SetMarkerSize(0.1);
+		h_Mee__rmUM_Rebin->SetLineColor(3);				h_Mee__rmUM_Rebin->SetMarkerStyle(kOpenStar);			h_Mee__rmUM_Rebin->SetMarkerColor(3);				h_Mee__rmUM_Rebin->SetMarkerSize(0.1);
+		h_Mee__rmUM_Rebin_scale4->SetLineColor(3);		h_Mee__rmUM_Rebin_scale4->SetMarkerStyle(kOpenStar);		h_Mee__rmUM_Rebin_scale4->SetMarkerColor(3);		h_Mee__rmUM_Rebin_scale4->SetMarkerSize(0.1);
+		h_Mee__rmUM_Rebin_scale5->SetLineColor(3);		h_Mee__rmUM_Rebin_scale5->SetMarkerStyle(kOpenStar);		h_Mee__rmUM_Rebin_scale5->SetMarkerColor(3);		h_Mee__rmUM_Rebin_scale5->SetMarkerSize(0.1);
+
+		TCanvas* c_scale = new TCanvas("c_scale", "c_scale", 1800, 1200);
+		c_scale->Divide(3, 2);
+		
+
+		// cd(1): US-LS(PSAC corr)
+		c_scale->cd(1);
+		gPad->SetLogy(1);
+		gPad->SetLeftMargin(0.12);
+		gPad->SetRightMargin(0.05);
+		gStyle->SetOptStat(0);
+		h_Mee__rmLS_PSACcorr_Rebin->SetMaximum(1e9);
+		h_Mee__rmLS_PSACcorr_Rebin->SetMinimum(1e0);
+		h_Mee__rmLS_PSACcorr_Rebin->GetXaxis()->SetRangeUser(0, 5);
+		h_Mee__rmLS_PSACcorr_Rebin->DrawClone("PE");
+
+		// cd(2): US-UM (scale-5%)
+		c_scale->cd(2);
+		gPad->SetLogy(1);
+		gPad->SetLeftMargin(0.12);
+		gPad->SetRightMargin(0.05);
+		h_Mee__rmUM_Rebin_scale1->SetMaximum(1e9);
+		h_Mee__rmUM_Rebin_scale1->SetMinimum(1e0);
+		h_Mee__rmUM_Rebin_scale1->GetXaxis()->SetRangeUser(0, 5);
+		h_Mee__rmUM_Rebin_scale1->DrawClone("PE");
+
+		// cd(3): US-UM (scale-3%)
+		c_scale->cd(3);
+		gPad->SetLogy(1);
+		gPad->SetLeftMargin(0.12);
+		gPad->SetRightMargin(0.05);
+		h_Mee__rmUM_Rebin_scale2->SetMaximum(1e9);
+		h_Mee__rmUM_Rebin_scale2->SetMinimum(1e0);
+		h_Mee__rmUM_Rebin_scale2->GetXaxis()->SetRangeUser(0, 5);
+		h_Mee__rmUM_Rebin_scale2->DrawClone("PE");
+
+		// cd(4): US-UM (scale原值)
+		c_scale->cd(4);
+		gPad->SetLogy(1);
+		gPad->SetLeftMargin(0.12);
+		gPad->SetRightMargin(0.05);
+		h_Mee__rmUM_Rebin->SetMaximum(1e9);
+		h_Mee__rmUM_Rebin->SetMinimum(1e0);
+		h_Mee__rmUM_Rebin->GetXaxis()->SetRangeUser(0, 5);
+		h_Mee__rmUM_Rebin->DrawClone("PE");
+
+		// cd(5): US-UM (scale+3%)
+		c_scale->cd(5);
+		gPad->SetLogy(1);
+		gPad->SetLeftMargin(0.12);
+		gPad->SetRightMargin(0.05);
+		h_Mee__rmUM_Rebin_scale4->SetMaximum(1e9);
+		h_Mee__rmUM_Rebin_scale4->SetMinimum(1e0);
+		h_Mee__rmUM_Rebin_scale4->GetXaxis()->SetRangeUser(0, 5);
+		h_Mee__rmUM_Rebin_scale4->DrawClone("PE");
+
+		// cd(6): US-UM (scale+5%)
+		c_scale->cd(6);
+		gPad->SetLogy(1);
+		gPad->SetLeftMargin(0.12);
+		gPad->SetRightMargin(0.05);
+		h_Mee__rmUM_Rebin_scale5->SetMaximum(1e9);
+		h_Mee__rmUM_Rebin_scale5->SetMinimum(1e0);
+		h_Mee__rmUM_Rebin_scale5->GetXaxis()->SetRangeUser(0, 5);
+		h_Mee__rmUM_Rebin_scale5->DrawClone("PE");
+
+		c_scale->SaveAs(Form("roots/%d_rmUM_scale.png", number));
 	}
 }

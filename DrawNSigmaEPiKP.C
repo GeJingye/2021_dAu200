@@ -1,7 +1,7 @@
 //---------------------从dAu200GeV_2016.root中提取直方图，并进行设置更改和元素添加----------------------
 #include "../2021_OO200/someFunction.h"
 #include "StRoot/dAu.2021.SL23d/StAnaCuts.h"
-void DrawNSigmaEPiKP(TString inFilename = "roots/6_20260831_He3Au2014_TOF.root", Int_t number = 6) //
+void DrawNSigmaEPiKP(TString inFilename = "roots/5_20260831_dAu2021_TOF_newCenDefin_keepSamewithzih.root", Int_t number = 5) //
 {
 	// 从root文件中导入待拟合的直方图
 	TFile *inFile = new TFile(inFilename);
@@ -347,7 +347,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/6_20260831_He3Au2014_TOF.root",
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		h_Mee__unlikeSame->GetXaxis()->SetRangeUser(0, 0.2);
+		h_Mee__unlikeSame->GetXaxis()->SetRangeUser(0, 1);
 		h_Mee__unlikeSame->DrawClone("");
 		h_Mee__unlikeSame__w_PhiV_Cut->DrawClone("same");
 		auto legend = new TLegend(0.53, 0.58, 0.78, 0.68);
@@ -363,8 +363,8 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/6_20260831_He3Au2014_TOF.root",
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		h_Mee__unlikeSame->GetXaxis()->SetRangeUser(0, 0.5);
-		h_Mee__unlikeSame__w_PhiV_Cut->GetXaxis()->SetRangeUser(0, 0.5);
+		h_Mee__unlikeSame->GetXaxis()->SetRangeUser(0, 2);
+		h_Mee__unlikeSame__w_PhiV_Cut->GetXaxis()->SetRangeUser(0, 2);
 		h_Mee__unlikeSame->DrawClone("");
 		h_Mee__unlikeSame__w_PhiV_Cut->DrawClone("same");
 		legend->DrawClone("same");

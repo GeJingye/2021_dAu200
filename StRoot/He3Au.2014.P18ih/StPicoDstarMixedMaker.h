@@ -52,6 +52,7 @@ class ParticleInfo
 	Float_t p2;
 	Float_t p3;
 	Bool_t isPhotonicE;//isPhotonicE
+    Bool_t isDalitzE;//isDalitzE
 	Bool_t isPureE;
 };
 

@@ -50,11 +50,11 @@ s = static → 类的静态成员
 g = global → 全局变量（极少用）
 k = const/constexpr → 编译期常量（如 kStOK）
 h = histogram →  ROOT 直方图指针
-*/
+*/ 
 
 const Int_t kMagBins = 2;							 // 磁场的取向（+/-）
 const Int_t kCenBins = 16;							 // 中心度分成的bin数(0,80,5),80%~100%被忽略了吗？
-const Int_t kVzBins = 40;							 // Vz分成的bin数
+const Int_t kVzBins = 60;							 // Vz分成的bin数
 Int_t magBufferIndex, cenBufferIndex, vzBufferIndex; // 索引到每个bin
 const Int_t kMaxEventsInBuffer = 50;				 // 每个buffer中事件数最大值
 const Int_t kMaxElectrons = 50;						 // 每个event中正、负电子数的上界
@@ -331,9 +331,36 @@ Int_t StPicoDstarMixedMaker::Make()
 		h_nTofMat_RefMul->Fill(Refmult, picoEvent->nBTOFMatch());
 		h_mRefMult->Fill(mRefmult);
 
-		// 计算该事例的中心度
+		// 计算该事例的中心度\
+		// central trigger
+		// if(mRefmult<2.0)mCen16 = -1;
+		// else if (mRefmult<3.0)mCen16 = 0;
+		// else if (mRefmult<5.0)mCen16 = 1;
+		// else if (mRefmult<7.0)mCen16 = 2;
+		// else if (mRefmult<10.0)mCen16 = 3;
+		// else if (mRefmult<12.0)mCen16 = 4;
+		// else if (mRefmult<14.0)mCen16 = 5;
+		// else if (mRefmult<20.0)mCen16 = 6;
+		// else if (mRefmult<32.0)mCen16 = 7;
+		// else mCen16 = 8;
+ 
+		// ZDCE trigger
+		if(mRefmult<2.0)mCen16 = -1;
+		else if (mRefmult<3.0)mCen16 = 0;
+		else if (mRefmult<5.0)mCen16 = 1;
+		else if (mRefmult<7.0)mCen16 = 2;
+		else if (mRefmult<10.0)mCen16 = 3;
+		else if (mRefmult<12.0)mCen16 = 4;
+		else if (mRefmult<14.0)mCen16 = 5;
+		else if (mRefmult<16.0)mCen16 = 6;
+		else if (mRefmult<18.0)mCen16 = 7;
+		else if (mRefmult<20.0)mCen16 = 8;
+		else if (mRefmult<23.0)mCen16 = 9;
+		else if (mRefmult<27.0)mCen16 = 10;
+		else if (mRefmult<32.0)mCen16 = 11;
+		else mCen16 = 12;
+
 		mCen9 = 0;
-		mCen16 = 0;
 
 		// 不同条件cut后的事例数统计
 		Bool_t vzcut = mVz < anaCuts::Vz_up && mVz > anaCuts::Vz_low;
@@ -489,7 +516,7 @@ Int_t StPicoDstarMixedMaker::Make()
 					isTPCElectron__1 = nSigmaE < 3.0 && nSigmaE > -1.0;
 				// Fill Histogram
 				// group 1
-				if (mom.Perp() > 0.2 && fabs(mom.Eta()) < anaCuts::Eta)
+				if (mom.Perp() > anaCuts::Pt && fabs(mom.Eta()) < anaCuts::Eta)
 				{
 					h_nSigmaElectron_P__1->Fill(mom.Mag(), nSigmaE);
 					if (isTOFElectron__1)
@@ -524,6 +551,7 @@ Int_t StPicoDstarMixedMaker::Make()
 						particleinfo.p2 = mom.Y();
 						particleinfo.p3 = mom.Z();
 						particleinfo.isPhotonicE = kFALSE;
+						particleinfo.isDalitzE = kFALSE;
 						particleinfo.isPureE = kFALSE;
 						electroninfo.push_back(particleinfo);
 
@@ -552,6 +580,7 @@ Int_t StPicoDstarMixedMaker::Make()
 						particleinfo.p2 = mom.Y();
 						particleinfo.p3 = mom.Z();
 						particleinfo.isPhotonicE = kFALSE;
+						particleinfo.isDalitzE = kFALSE;
 						particleinfo.isPureE = kFALSE;
 						positroninfo.push_back(particleinfo);
 
@@ -596,6 +625,11 @@ Int_t StPicoDstarMixedMaker::Make()
 					Double_t angleV = getPhiVAngle(particle1_4V, particle2_4V, 1, -1); // 注意参数1、-1的选取要求
 					Double_t angleVcut = fphiVcut->Eval(eepair.M());				   // 根据fphiVcut关于pair-M的函数取值
 					h_Mee_PhiV__unlikeSame->Fill(eepair.M(), angleV);
+					// if (eepair.M() < 0.02)
+					// {
+					// 	positroninfo[x].isDalitzE = kTRUE;
+					// 	electroninfo[y].isDalitzE = kTRUE;
+					// }
 					if (eepair.M() < anaCuts::PhiVCutMRange && angleV < angleVcut)
 					{
 						positroninfo[x].isPhotonicE = kTRUE;
@@ -603,15 +637,6 @@ Int_t StPicoDstarMixedMaker::Make()
 					}
 				}
 			}
-			// 读取经过\phi_v cut前、后的正、负电子的横动量，赝快度，方位角
-			for (x = 0; x < num_positron; x++)
-			{
-				
-			} // end: for(x=0;x<num_positron;x++)
-			for (y = 0; y < num_electron; y++)
-			{
-				
-			} //
 			for (x = 0; x < num_positron; x++) // 填充current_positron，只填充isPhotonicE=False的正电子
 			{
 				if (positroninfo[x].isPureE)
@@ -628,23 +653,23 @@ Int_t StPicoDstarMixedMaker::Make()
 				h_phi__positrons->Fill(positroninfo[x].phi);
 				if (positroninfo[x].isPhotonicE)
 				{
-					h_pT__positrons_in_PhiV_Cut->Fill(positroninfo[x].pt);
-					h_eta__positrons_in_PhiV_Cut->Fill(positroninfo[x].eta);
-					h_phi__positrons_in_PhiV_Cut->Fill(positroninfo[x].phi);
-					h_nHitsFit__positrons_in_PhiV_Cut->Fill(positroninfo[x].nHitsFit);
-					h_nHitsDedx__positrons_in_PhiV_Cut->Fill(positroninfo[x].nHitsDedx);
-					h_nHitsMax__positrons_in_PhiV_Cut->Fill(positroninfo[x].nHitsMax);
-					h_DCA__positrons_in_PhiV_Cut->Fill(positroninfo[x].DCA);
+					// h_pT__positrons_in_PhiV_Cut->Fill(positroninfo[x].pt);
+					// h_eta__positrons_in_PhiV_Cut->Fill(positroninfo[x].eta);
+					// h_phi__positrons_in_PhiV_Cut->Fill(positroninfo[x].phi);
+					// h_nHitsFit__positrons_in_PhiV_Cut->Fill(positroninfo[x].nHitsFit);
+					// h_nHitsDedx__positrons_in_PhiV_Cut->Fill(positroninfo[x].nHitsDedx);
+					// h_nHitsMax__positrons_in_PhiV_Cut->Fill(positroninfo[x].nHitsMax);
+					// h_DCA__positrons_in_PhiV_Cut->Fill(positroninfo[x].DCA);
 				}
-				if (!positroninfo[x].isPhotonicE)
+				if (!positroninfo[x].isPhotonicE && !positroninfo[x].isDalitzE)
 				{
 					h_pT__positrons_w_PhiV_Cut->Fill(positroninfo[x].pt);
 					h_eta__positrons_w_PhiV_Cut->Fill(positroninfo[x].eta);
 					h_phi__positrons_w_PhiV_Cut->Fill(positroninfo[x].phi);
-					h_nHitsFit__positrons_w_PhiV_Cut->Fill(positroninfo[x].nHitsFit);
-					h_nHitsDedx__positrons_w_PhiV_Cut->Fill(positroninfo[x].nHitsDedx);
-					h_nHitsMax__positrons_w_PhiV_Cut->Fill(positroninfo[x].nHitsMax);
-					h_DCA__positrons_w_PhiV_Cut->Fill(positroninfo[x].DCA);
+					// h_nHitsFit__positrons_w_PhiV_Cut->Fill(positroninfo[x].nHitsFit);
+					// h_nHitsDedx__positrons_w_PhiV_Cut->Fill(positroninfo[x].nHitsDedx);
+					// h_nHitsMax__positrons_w_PhiV_Cut->Fill(positroninfo[x].nHitsMax);
+					// h_DCA__positrons_w_PhiV_Cut->Fill(positroninfo[x].DCA);
 					current_positron[current_nPositron].SetPx(positroninfo[x].p1);
 					current_positron[current_nPositron].SetPy(positroninfo[x].p2);
 					current_positron[current_nPositron].SetPz(positroninfo[x].p3);
@@ -668,23 +693,23 @@ Int_t StPicoDstarMixedMaker::Make()
 				h_phi__electrons->Fill(electroninfo[x].phi);
 				if (electroninfo[x].isPhotonicE)
 				{
-					h_pT__electrons_in_PhiV_Cut->Fill(electroninfo[x].pt);
-					h_eta__electrons_in_PhiV_Cut->Fill(electroninfo[x].eta);
-					h_phi__electrons_in_PhiV_Cut->Fill(electroninfo[x].phi);
-					h_nHitsFit__electrons_in_PhiV_Cut->Fill(electroninfo[x].nHitsFit);
-					h_nHitsDedx__electrons_in_PhiV_Cut->Fill(electroninfo[x].nHitsDedx);
-					h_nHitsMax__electrons_in_PhiV_Cut->Fill(electroninfo[x].nHitsMax);
-					h_DCA__electrons_in_PhiV_Cut->Fill(electroninfo[x].DCA);
+					// h_pT__electrons_in_PhiV_Cut->Fill(electroninfo[x].pt);
+					// h_eta__electrons_in_PhiV_Cut->Fill(electroninfo[x].eta);
+					// h_phi__electrons_in_PhiV_Cut->Fill(electroninfo[x].phi);
+					// h_nHitsFit__electrons_in_PhiV_Cut->Fill(electroninfo[x].nHitsFit);
+					// h_nHitsDedx__electrons_in_PhiV_Cut->Fill(electroninfo[x].nHitsDedx);
+					// h_nHitsMax__electrons_in_PhiV_Cut->Fill(electroninfo[x].nHitsMax);
+					// h_DCA__electrons_in_PhiV_Cut->Fill(electroninfo[x].DCA);
 				}
-				if (!electroninfo[x].isPhotonicE)
+				if (!electroninfo[x].isPhotonicE && !electroninfo[x].isDalitzE)
 				{
 					h_pT__electrons_w_PhiV_Cut->Fill(electroninfo[x].pt);
 					h_eta__electrons_w_PhiV_Cut->Fill(electroninfo[x].eta);
 					h_phi__electrons_w_PhiV_Cut->Fill(electroninfo[x].phi);
-					h_nHitsFit__electrons_w_PhiV_Cut->Fill(electroninfo[x].nHitsFit);
-					h_nHitsDedx__electrons_w_PhiV_Cut->Fill(electroninfo[x].nHitsDedx);
-					h_nHitsMax__electrons_w_PhiV_Cut->Fill(electroninfo[x].nHitsMax);
-					h_DCA__electrons_w_PhiV_Cut->Fill(electroninfo[x].DCA);
+					// h_nHitsFit__electrons_w_PhiV_Cut->Fill(electroninfo[x].nHitsFit);
+					// h_nHitsDedx__electrons_w_PhiV_Cut->Fill(electroninfo[x].nHitsDedx);
+					// h_nHitsMax__electrons_w_PhiV_Cut->Fill(electroninfo[x].nHitsMax);
+					// h_DCA__electrons_w_PhiV_Cut->Fill(electroninfo[x].DCA);
 					current_electron[current_nElectron].SetPx(electroninfo[x].p1);
 					current_electron[current_nElectron].SetPy(electroninfo[x].p2);
 					current_electron[current_nElectron].SetPz(electroninfo[x].p3);
@@ -708,11 +733,11 @@ Int_t StPicoDstarMixedMaker::Make()
 					particle2_4V.SetPz(electroninfo[y].p3);
 					particle2_4V.SetE(electroninfo[y].energy);
 					eepair = particle1_4V + particle2_4V;
-					Double_t angleV = getPhiVAngle(particle1_4V, particle2_4V, 1, -1);// 注意参数1、-1的选取要求
-					Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
+					// Double_t angleV = getPhiVAngle(particle1_4V, particle2_4V, 1, -1);// 注意参数1、-1的选取要求
+					// Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
 					h_Mee__unlikeSame->Fill(eepair.M());
 					//if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
-					if (!positroninfo[x].isPhotonicE && !electroninfo[y].isPhotonicE)
+					if (!positroninfo[x].isDalitzE && !electroninfo[y].isDalitzE && !positroninfo[x].isPhotonicE && !electroninfo[y].isPhotonicE)
 					{
 						h_Mee__unlikeSame__w_PhiV_Cut->Fill(eepair.M());
 						h_Rapidity__unlikeSame->Fill(eepair.Rapidity());
@@ -738,10 +763,10 @@ Int_t StPicoDstarMixedMaker::Make()
 					particle2_4V.SetPz(electroninfo[y].p3);
 					particle2_4V.SetE(electroninfo[y].energy);
 					eepair = particle1_4V + particle2_4V;
-					Double_t angleV = getPhiVAngle(particle1_4V, particle2_4V, -1, -1);// 注意参数1、-1的选取要求
-					Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
+					// Double_t angleV = getPhiVAngle(particle1_4V, particle2_4V, -1, -1);// 注意参数1、-1的选取要求
+					// Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
 					//if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
-					if (!electroninfo[x].isPhotonicE && !electroninfo[y].isPhotonicE)
+					if (!electroninfo[x].isDalitzE && !electroninfo[y].isDalitzE && !electroninfo[x].isPhotonicE && !electroninfo[y].isPhotonicE)
 					{
 						if (fabs(eepair.Rapidity()) <= 1) // 判断重建的粒子是否在中心快度区，为什么需要在中心快度区？
 						{
@@ -764,10 +789,10 @@ Int_t StPicoDstarMixedMaker::Make()
 					particle2_4V.SetPz(positroninfo[y].p3);
 					particle2_4V.SetE(positroninfo[y].energy);
 					eepair = particle1_4V + particle2_4V;
-					Double_t angleV = getPhiVAngle(particle1_4V, particle2_4V, 1, 1);// 注意参数1、-1的选取要求
-					Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
+					// Double_t angleV = getPhiVAngle(particle1_4V, particle2_4V, 1, 1);// 注意参数1、-1的选取要求
+					// Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
 					//if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
-					if (!positroninfo[x].isPhotonicE && !positroninfo[y].isPhotonicE)
+					if (!positroninfo[x].isDalitzE && !positroninfo[y].isDalitzE && !positroninfo[x].isPhotonicE && !positroninfo[y].isPhotonicE)
 					{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
@@ -785,15 +810,15 @@ Int_t StPicoDstarMixedMaker::Make()
 					for (y = 0; y < buffer_nEMinus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent]; y++)
 					{
 						eepair = current_positron[x] + buffer_eMinus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y];
-						Double_t angleV = getPhiVAngle(current_positron[x], buffer_eMinus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y], 1, -1);// 注意参数1、-1的选取要求
-						Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
-						if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
-						{
+						// Double_t angleV = getPhiVAngle(current_positron[x], buffer_eMinus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y], 1, -1);// 注意参数1、-1的选取要求
+						// Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
+						// if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
+						//{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
 							h_Mee_Pt_Cen__unlikeMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
 						}
-						}
+						//}
 					}
 				}
 				for (x = 0; x < current_nElectron; x++) // -+
@@ -801,15 +826,15 @@ Int_t StPicoDstarMixedMaker::Make()
 					for (y = 0; y < buffer_nEPlus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent]; y++)
 					{
 						eepair = current_electron[x] + buffer_ePlus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y];
-						Double_t angleV = getPhiVAngle(current_electron[x], buffer_ePlus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y], -1, 1);
-						Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
-						if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
-						{
+						// Double_t angleV = getPhiVAngle(current_electron[x], buffer_ePlus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y], -1, 1);
+						// Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
+						// if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
+						// {
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
 							h_Mee_Pt_Cen__unlikeMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
 						}
-						}
+						//}
 					}
 				}
 				for (x = 0; x < current_nPositron; x++) // ++
@@ -817,15 +842,15 @@ Int_t StPicoDstarMixedMaker::Make()
 					for (y = 0; y < buffer_nEPlus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent]; y++)
 					{
 						eepair = current_positron[x] + buffer_ePlus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y];
-						Double_t angleV = getPhiVAngle(current_positron[x], buffer_ePlus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y], 1, 1);// 注意参数1、-1的选取要求
-						Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
-						if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
-						{
+						// Double_t angleV = getPhiVAngle(current_positron[x], buffer_ePlus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y], 1, 1);// 注意参数1、-1的选取要求
+						// Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
+						// if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
+						// {
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
 							h_Mee_Pt_Cen__likeppMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
 						}
-						}
+						//}
 					}
 				}
 				for (x = 0; x < current_nElectron; x++) // --
@@ -833,15 +858,15 @@ Int_t StPicoDstarMixedMaker::Make()
 					for (y = 0; y < buffer_nEMinus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent]; y++)
 					{
 						eepair = current_electron[x] + buffer_eMinus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y];
-						Double_t angleV = getPhiVAngle(current_electron[x], buffer_eMinus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y], -1, -1);// 注意参数1、-1的选取要求
-						Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
-						if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
-						{
+						// Double_t angleV = getPhiVAngle(current_electron[x], buffer_eMinus[magBufferIndex][cenBufferIndex][vzBufferIndex][iBufferEvent][y], -1, -1);// 注意参数1、-1的选取要求
+						// Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
+						// if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
+						// {
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
 							h_Mee_Pt_Cen__likemmMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
 						}
-						}
+						//}
 					}
 				}
 			} // End Mixed Event
@@ -939,28 +964,28 @@ Int_t StPicoDstarMixedMaker::Finish()
 	h_pT__electrons_w_PhiV_Cut->Write();
 	h_eta__electrons_w_PhiV_Cut->Write();
 	h_phi__electrons_w_PhiV_Cut->Write();
-	h_pT__positrons_in_PhiV_Cut->Write();
-	h_eta__positrons_in_PhiV_Cut->Write();
-	h_phi__positrons_in_PhiV_Cut->Write();
-	h_nHitsFit__positrons_in_PhiV_Cut->Write();
-	h_nHitsDedx__positrons_in_PhiV_Cut->Write();
-	h_nHitsMax__positrons_in_PhiV_Cut->Write();
-	h_DCA__positrons_in_PhiV_Cut->Write();
-	h_nHitsFit__positrons_w_PhiV_Cut->Write();
-	h_nHitsDedx__positrons_w_PhiV_Cut->Write();
-	h_nHitsMax__positrons_w_PhiV_Cut->Write();
-	h_DCA__positrons_w_PhiV_Cut->Write();
-	h_pT__electrons_in_PhiV_Cut->Write();
-	h_eta__electrons_in_PhiV_Cut->Write();
-	h_phi__electrons_in_PhiV_Cut->Write();
-	h_nHitsFit__electrons_in_PhiV_Cut->Write();
-	h_nHitsDedx__electrons_in_PhiV_Cut->Write();
-	h_nHitsMax__electrons_in_PhiV_Cut->Write();
-	h_DCA__electrons_in_PhiV_Cut->Write();
-	h_nHitsFit__electrons_w_PhiV_Cut->Write();
-	h_nHitsDedx__electrons_w_PhiV_Cut->Write();
-	h_nHitsMax__electrons_w_PhiV_Cut->Write();
-	h_DCA__electrons_w_PhiV_Cut->Write();
+	// h_pT__positrons_in_PhiV_Cut->Write();
+	// h_eta__positrons_in_PhiV_Cut->Write();
+	// h_phi__positrons_in_PhiV_Cut->Write();
+	// h_nHitsFit__positrons_in_PhiV_Cut->Write();
+	// h_nHitsDedx__positrons_in_PhiV_Cut->Write();
+	// h_nHitsMax__positrons_in_PhiV_Cut->Write();
+	// h_DCA__positrons_in_PhiV_Cut->Write();
+	// h_nHitsFit__positrons_w_PhiV_Cut->Write();
+	// h_nHitsDedx__positrons_w_PhiV_Cut->Write();
+	// h_nHitsMax__positrons_w_PhiV_Cut->Write();
+	// h_DCA__positrons_w_PhiV_Cut->Write();
+	// h_pT__electrons_in_PhiV_Cut->Write();
+	// h_eta__electrons_in_PhiV_Cut->Write();
+	// h_phi__electrons_in_PhiV_Cut->Write();
+	// h_nHitsFit__electrons_in_PhiV_Cut->Write();
+	// h_nHitsDedx__electrons_in_PhiV_Cut->Write();
+	// h_nHitsMax__electrons_in_PhiV_Cut->Write();
+	// h_DCA__electrons_in_PhiV_Cut->Write();
+	// h_nHitsFit__electrons_w_PhiV_Cut->Write();
+	// h_nHitsDedx__electrons_w_PhiV_Cut->Write();
+	// h_nHitsMax__electrons_w_PhiV_Cut->Write();
+	// h_DCA__electrons_w_PhiV_Cut->Write();
 
 
 

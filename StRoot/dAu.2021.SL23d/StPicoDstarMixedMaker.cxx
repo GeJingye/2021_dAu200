@@ -461,7 +461,7 @@ Int_t StPicoDstarMixedMaker::Make()
 				}
 				// group 1				
 				if (mom.Mag() <= 1.0)
-					isTPCElectron__1 = nSigmaE < 3.0 && nSigmaE > (2.5 * mom.Mag() - 3.55);
+					isTPCElectron__1 = nSigmaE < 3.0 && nSigmaE > (2.3 * mom.Mag() - 3.55);
 				if (mom.Mag() > 1.0)
 					isTPCElectron__1 = nSigmaE < 3.0 && nSigmaE > -1.25;
 				// Fill Histogram
@@ -636,11 +636,8 @@ Int_t StPicoDstarMixedMaker::Make()
 					Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
 					h_Mee__unlikeSame->Fill(eepair.M());
 					if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
-					{
-						
-					//}
 					//if (!positroninfo[x].isPhotonicE && !electroninfo[y].isPhotonicE)
-					//{
+					{
 						h_Mee__unlikeSame__w_PhiV_Cut->Fill(eepair.M());
 						h_Rapidity__unlikeSame->Fill(eepair.Rapidity());
 						if (fabs(eepair.Rapidity()) <= 1) // 为什么需要在中心快度区？

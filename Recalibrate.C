@@ -1,18 +1,18 @@
 //---------------------OO.root----------------------
 #include "../2021_OO200/someFunction.h"
 #include <iomanip>
-void Recalibrate(TString inFileName = "roots/5_20260831_dAu2021_TOF_newCenDefin_keepSamewithzih.root", Int_t number = 5)//;;
+void Recalibrate(TString inFileName = "roots/20260902_dAu2021_TOF_keepSamewithzih_nsigmaEcutEffCal.root", Int_t number = 8)//;;
 {
 	// root
 	TFile *inFile = new TFile(inFileName);
 	if (!inFile) { cout << "The input file is not found! Exiting..." << endl; return; }
 	//from PureE
-	TH3F* h_Pt_Cen_nSigmaE  = (TH3F*)inFile->Get("h_Pt_Cen_nSigmaEcorr");RebinXCen(h_Pt_Cen_nSigmaE);
-	TH3F* h_Eta_Cen_nSigmaE = (TH3F*)inFile->Get("h_Eta_Cen_nSigmaEcorr");RebinXCen(h_Eta_Cen_nSigmaE);
-	TH3F* h_Phi_Cen_nSigmaE = (TH3F*)inFile->Get("h_Phi_Cen_nSigmaEcorr");RebinXCen(h_Phi_Cen_nSigmaE);
-	TH3F* h_Pt_Cen_nSigmaEcorr = (TH3F*)inFile->Get("h_Pt_Cen_nSigmaE"); RebinXCen(h_Pt_Cen_nSigmaEcorr);
-	TH3F* h_Eta_Cen_nSigmaEcorr = (TH3F*)inFile->Get("h_Eta_Cen_nSigmaE"); RebinXCen(h_Eta_Cen_nSigmaEcorr);
-	TH3F* h_Phi_Cen_nSigmaEcorr = (TH3F*)inFile->Get("h_Phi_Cen_nSigmaE"); RebinXCen(h_Phi_Cen_nSigmaEcorr);
+	TH3F* h_Pt_Cen_nSigmaE  = (TH3F*)inFile->Get("h_Pt_Cen_nSigmaE");RebinXCen(h_Pt_Cen_nSigmaE);
+	TH3F* h_Eta_Cen_nSigmaE = (TH3F*)inFile->Get("h_Eta_Cen_nSigmaE");RebinXCen(h_Eta_Cen_nSigmaE);
+	TH3F* h_Phi_Cen_nSigmaE = (TH3F*)inFile->Get("h_Phi_Cen_nSigmaE");RebinXCen(h_Phi_Cen_nSigmaE);
+	TH3F* h_Pt_Cen_nSigmaEcorr = (TH3F*)inFile->Get("h_Pt_Cen_nSigmaEcorr"); RebinXCen(h_Pt_Cen_nSigmaEcorr);
+	TH3F* h_Eta_Cen_nSigmaEcorr = (TH3F*)inFile->Get("h_Eta_Cen_nSigmaEcorr"); RebinXCen(h_Eta_Cen_nSigmaEcorr);
+	TH3F* h_Phi_Cen_nSigmaEcorr = (TH3F*)inFile->Get("h_Phi_Cen_nSigmaEcorr"); RebinXCen(h_Phi_Cen_nSigmaEcorr);
 	//Pt
 	TH2F* h2_zmean_binCount_Pt;
 	TH2F* h2_zmean_gausFit_Pt;
@@ -28,7 +28,7 @@ void Recalibrate(TString inFileName = "roots/5_20260831_dAu2021_TOF_newCenDefin_
 	TH2F* h2_zmean_gausFit_Phi;
 	TH1F* h1_xmean_cen__binCount_Phi;
 	TH1F* h1_xmean_cen__gausFit_Phi;
-	if (1) // 输出修正量数组
+	if (0) // 输出修正量数组
 	{
 		//Pt
 		h2_zmean_binCount_Pt = (TH2F*)MeanOfH3D_binCount(h_Pt_Cen_nSigmaE, "h2_zmean_binCount_Pt");
@@ -334,20 +334,20 @@ void Recalibrate(TString inFileName = "roots/5_20260831_dAu2021_TOF_newCenDefin_
 	TH1F* h1_xmean_cen__Phi_Ecorr;
 
 	// //Pt
-	// h2_zmean_Pt_Cen__E = (TH2F*)MeanOfH3D_gausFit(h_Pt_Cen_nSigmaE, "h2_zmean_Pt_Cen__E");
-	// h2_zmean_Pt_Cen__Ecorr = (TH2F*)MeanOfH3D_gausFit(h_Pt_Cen_nSigmaEcorr, "h2_zmean_Pt_Cen__Ecorr");
-	// h1_xmean_cen__Pt_E = (TH1F*)Meanof2DAlongX(h2_zmean_Pt_Cen__E, "h1_xmean_cen__Pt_E");
-	// h1_xmean_cen__Pt_Ecorr = (TH1F*)Meanof2DAlongX(h2_zmean_Pt_Cen__Ecorr, "h1_xmean_cen__Pt_Ecorr");
-	// //Eta
-	// h2_zmean_Eta_Cen__E = (TH2F*)MeanOfH3D_gausFit(h_Eta_Cen_nSigmaE, "h2_zmean_Eta_Cen__E");
-	// h2_zmean_Eta_Cen__Ecorr = (TH2F*)MeanOfH3D_gausFit(h_Eta_Cen_nSigmaEcorr, "h2_zmean_Eta_Cen__Ecorr");
-	// h1_xmean_cen__Eta_E = (TH1F*)Meanof2DAlongX(h2_zmean_Eta_Cen__E, "h1_xmean_cen__Eta_E");
-	// h1_xmean_cen__Eta_Ecorr = (TH1F*)Meanof2DAlongX(h2_zmean_Eta_Cen__Ecorr, "h1_xmean_cen__Eta_Ecorr");
-	// //Phi
-	// h2_zmean_Phi_Cen__E = (TH2F*)MeanOfH3D_gausFit(h_Phi_Cen_nSigmaE, "h2_zmean_Phi_Cen__E");
-	// h2_zmean_Phi_Cen__Ecorr = (TH2F*)MeanOfH3D_gausFit(h_Phi_Cen_nSigmaEcorr, "h2_zmean_Phi_Cen__Ecorr");
-	// h1_xmean_cen__Phi_E = (TH1F*)Meanof2DAlongX(h2_zmean_Phi_Cen__E, "h1_xmean_cen__Phi_E");
-	// h1_xmean_cen__Phi_Ecorr = (TH1F*)Meanof2DAlongX(h2_zmean_Phi_Cen__Ecorr, "h1_xmean_cen__Phi_Ecorr");
+	h2_zmean_Pt_Cen__E = (TH2F*)MeanOfH3D_gausFit(h_Pt_Cen_nSigmaE, "h2_zmean_Pt_Cen__E");
+	h2_zmean_Pt_Cen__Ecorr = (TH2F*)MeanOfH3D_gausFit(h_Pt_Cen_nSigmaEcorr, "h2_zmean_Pt_Cen__Ecorr");
+	h1_xmean_cen__Pt_E = (TH1F*)Meanof2DAlongX(h2_zmean_Pt_Cen__E, "h1_xmean_cen__Pt_E");
+	h1_xmean_cen__Pt_Ecorr = (TH1F*)Meanof2DAlongX(h2_zmean_Pt_Cen__Ecorr, "h1_xmean_cen__Pt_Ecorr");
+	//Eta
+	h2_zmean_Eta_Cen__E = (TH2F*)MeanOfH3D_gausFit(h_Eta_Cen_nSigmaE, "h2_zmean_Eta_Cen__E");
+	h2_zmean_Eta_Cen__Ecorr = (TH2F*)MeanOfH3D_gausFit(h_Eta_Cen_nSigmaEcorr, "h2_zmean_Eta_Cen__Ecorr");
+	h1_xmean_cen__Eta_E = (TH1F*)Meanof2DAlongX(h2_zmean_Eta_Cen__E, "h1_xmean_cen__Eta_E");
+	h1_xmean_cen__Eta_Ecorr = (TH1F*)Meanof2DAlongX(h2_zmean_Eta_Cen__Ecorr, "h1_xmean_cen__Eta_Ecorr");
+	//Phi
+	h2_zmean_Phi_Cen__E = (TH2F*)MeanOfH3D_gausFit(h_Phi_Cen_nSigmaE, "h2_zmean_Phi_Cen__E");
+	h2_zmean_Phi_Cen__Ecorr = (TH2F*)MeanOfH3D_gausFit(h_Phi_Cen_nSigmaEcorr, "h2_zmean_Phi_Cen__Ecorr");
+	h1_xmean_cen__Phi_E = (TH1F*)Meanof2DAlongX(h2_zmean_Phi_Cen__E, "h1_xmean_cen__Phi_E");
+	h1_xmean_cen__Phi_Ecorr = (TH1F*)Meanof2DAlongX(h2_zmean_Phi_Cen__Ecorr, "h1_xmean_cen__Phi_Ecorr");
 
 	// E and Ecorr
 	if (0)//nsigma_e vs pT
@@ -403,7 +403,7 @@ void Recalibrate(TString inFileName = "roots/5_20260831_dAu2021_TOF_newCenDefin_
 
 		c_Pt->SaveAs(Form("roots/%d_nsigmaMean_Pt.png", number));
 	}
-	if (0)//nsigma_e vs Eta
+	if (1)//nsigma_e vs Eta
 	{
 		TCanvas *c_Eta = new TCanvas("c_Eta", "c_Eta", 1100, 500);
 		c_Eta->Divide(2);
@@ -455,7 +455,7 @@ void Recalibrate(TString inFileName = "roots/5_20260831_dAu2021_TOF_newCenDefin_
 
 		c_Eta->SaveAs(Form("roots/%d_nsigmaMean_Eta.png", number));
 	}
-	if (0)//nsigma_e vs Phi
+	if (1)//nsigma_e vs Phi
 	{
 		TCanvas *c_Phi = new TCanvas("c_Phi", "c_Phi", 1100, 500);
 		c_Phi->Divide(2);
