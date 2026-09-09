@@ -1,7 +1,7 @@
 //---------------------从dAu200GeV_2016.root中提取直方图，并进行设置更改和元素添加----------------------
 #include "../2021_OO200/someFunction.h"
 #include "StRoot/dAu.2021.SL23d/StAnaCuts.h"
-void DrawNSigmaEPiKP(TString inFilename = "roots/5_20260831_dAu2021_TOF_newCenDefin_keepSamewithzih.root", Int_t number = 5) //
+void DrawNSigmaEPiKP(TString inFilename = "roots/10_20260905_He3Au2014_TOF_cutPEbyTagSingle_onlyCentralTgForMixed.root", Int_t number = 10) //
 {
 	// 从root文件中导入待拟合的直方图
 	TFile *inFile = new TFile(inFilename);
@@ -29,8 +29,8 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/5_20260831_dAu2021_TOF_newCenDe
 	// std::cout << "Total count: " << totalCount << std::endl;
 	// std::cout << "Total count (including under/overflow): " << totalCount1 << std::endl;
 	// std::cout << "Fraction in range: " << countInRange / totalCount * 100 << "%" << std::endl;
-	
-	TH1F *h_nTofMat_RefMul = (TH1F *)inFile->Get("h_nTofMat_RefMul");if(!h_nTofMat_RefMul) {cout<<"h_nTofMat_RefMul not found! Exiting..."<<endl; return;}
+	TH1F *h_mRefMult = (TH1F *)inFile->Get("h_mRefMult");if(!h_mRefMult) {cout<<"h_mRefMult not found! Exiting..."<<endl; return;}
+	TH2F *h_nTofMat_RefMul = (TH2F *)inFile->Get("h_nTofMat_RefMul");if(!h_nTofMat_RefMul) {cout<<"h_nTofMat_RefMul not found! Exiting..."<<endl; return;}
 	TH1F *h_passEvtcut = (TH1F *)inFile->Get("h_passEvtcut");if(!h_passEvtcut) {cout<<"h_passEvtcut not found! Exiting..."<<endl; return;}
 	TH1F *h_passTrkcut = (TH1F *)inFile->Get("h_passTrkcut");if(!h_passTrkcut) {cout<<"h_passTrkcut not found! Exiting..."<<endl; return;}
 	TH2F *h_VpdVz_Vz = (TH2F *)inFile->Get("h_VpdVz_Vz");if(!h_VpdVz_Vz) {cout<<"h_VpdVz_Vz not found! Exiting..."<<endl; return;}
@@ -86,7 +86,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/5_20260831_dAu2021_TOF_newCenDe
 
 		c_temp->SaveAs(Form("roots/%d_temp.png", number));
 	}
-	if (0) // h_passEvtcut,h_passTrkcut,h_nHitsFit_Pt_Eta,h_nHitsDEdx_Pt_Eta,h_pDca_Pt_Eta
+	if (1) // h_passEvtcut,h_passTrkcut,h_nHitsFit_Pt_Eta,h_nHitsDEdx_Pt_Eta,h_pDca_Pt_Eta
 	{
 		// 投影
 		TH2F *h_nHitsFit_Pt = (TH2F *)h_nHitsFit_Pt_Eta->Project3D("zx");if(!h_nHitsFit_Pt) {cout<<"h_nHitsFit_Pt not found! Exiting..."<<endl; return;}
@@ -208,7 +208,8 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/5_20260831_dAu2021_TOF_newCenDe
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		h_nTofMat_RefMul->DrawClone("col z");
+		h_mRefMult->GetXaxis()->SetRangeUser(0.0, 100);
+		h_mRefMult->DrawClone("col z");
 
 		c_temp->cd(13);
 		gPad->SetLogz(1);
@@ -315,7 +316,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/5_20260831_dAu2021_TOF_newCenDe
 
 		c1->SaveAs(Form("roots/%d_TrackQA_and_TrackTOFMatch.png", number));
 	}
-	if (1) // check PhiV cut
+	if (0) // check PhiV cut
 	{
 		h_Mee__unlikeSame->SetLineColor(kBlack);
 		h_Mee__unlikeSame->GetYaxis()->SetTitleOffset(1.5);

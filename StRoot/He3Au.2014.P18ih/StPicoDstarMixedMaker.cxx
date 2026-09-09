@@ -331,7 +331,7 @@ Int_t StPicoDstarMixedMaker::Make()
 		h_nTofMat_RefMul->Fill(Refmult, picoEvent->nBTOFMatch());
 		h_mRefMult->Fill(mRefmult);
 
-		// 计算该事例的中心度\
+		// 计算该事例的中心度
 		// central trigger
 		// if(mRefmult<2.0)mCen16 = -1;
 		// else if (mRefmult<3.0)mCen16 = 0;

@@ -435,7 +435,7 @@ Int_t StPicoDstarMixedMaker::Make()
 				Double_t nSigmaEcorrfactor = getNSigmaECorr(mom);
 				Double_t nSigmaEcorr = nSigmaE - nSigmaEcorrfactor;
 				h_nSigmaEcorr_P->Fill(mom.Mag(), nSigmaEcorr);
-				Double_t temp = nSigmaEcorr; nSigmaEcorr = nSigmaE; nSigmaE = temp;//将nsigmaE和nsigmaEcorr置换
+				//Double_t temp = nSigmaEcorr; nSigmaEcorr = nSigmaE; nSigmaE = temp;//将nsigmaE和nsigmaEcorr置换
 
 				// Electrons IDentification
 				Bool_t isTOFElectron__1 = kFALSE;

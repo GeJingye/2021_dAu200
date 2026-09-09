@@ -18,11 +18,11 @@
 
 namespace anaCuts
 {
-	const std::array<UInt_t, 2> trigNumber = {460101,460111};//460101,460111(Central);//460001(ZDCE),
+	const std::array<UInt_t, 2> trigNumber = {460001};//460101,460111(Central);//460001(ZDCE),
 	//										                 	
 	// event cuts 
-	Float_t const Vz_up = 70;
-	Float_t const Vz_low = -50;
+	Float_t const Vz_up = 40;//70;
+	Float_t const Vz_low = -40;//-50;
 	Float_t const Vr = 2; // 2cm
 	Float_t const vzVpdVz = 10; // cm
 	Float_t const Verr = 1e-5; // cm
