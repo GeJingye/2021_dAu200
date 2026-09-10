@@ -138,6 +138,7 @@ void StPicoDstarMixedMaker::initHists()
 	}
 	h_RefMult = new TH1F("h_RefMult", "h_RefMult", 250, 0, 250);													   // 参考多重数
 	h_nTofMat_RefMul = new TH2F("h_nTofMat_RefMul", "RefMul VS nTofmatch;RefMul;nTofMatch", 250, 0, 250, 250, 0, 250); // 与TOF匹配的径迹数vs参考多重数关系
+	h_nTofMat_RefMul_gE = new TH2F("h_nTofMat_RefMul_gE", "RefMul VS nTofmatch;RefMul;nTofMatch", 250, 0, 250, 250, 0, 250); // 与TOF匹配的径迹数vs参考多重数关系
 	h_mRefMult = new TH1F("h_mRefMult", "h_mRefMult", 250, 0, 250);													   // 监控事件多重数分布->计算中心度
 	h_passEvtcut = new TH1F("h_passEvtcut", "pass event cut", 9, -1.5, 7.5);
 	h_passEvtcut->GetXaxis()->SetBinLabel(1, "All");
@@ -301,7 +302,8 @@ Int_t StPicoDstarMixedMaker::Make()
 		Refmult = picoEvent->refMult();			   // 给出的是在线/原始 TPC 多重数（reference multiplicity），未经任何修正
 		mRefmult6 = getRefmult6(picoDst, picoEvent); // 用户离线重算的多重数，满足严格几何与质量要求
 		mRefmult = getRefmult(picoDst, picoEvent); // 用户离线重算的多重数，满足严格几何与质量要求
-
+		mTotnMIP = getTotnMIP(picoDst);				 // 获取EPD监测的该事例的最小电离粒子总数目
+		
 		h_RefMult->Fill(Refmult);
 		h_nTofMat_RefMul->Fill(Refmult, picoEvent->nBTOFMatch());
 		h_mRefMult->Fill(mRefmult);
@@ -321,7 +323,8 @@ Int_t StPicoDstarMixedMaker::Make()
 		Bool_t verrcut = !(fabs(mVx) < anaCuts::Verr && fabs(mVy) < anaCuts::Verr && fabs(mVz) < anaCuts::Verr); // Vx,Vy,Vz<1.0e-5 cm, why? too small that better than resolution.
 		Bool_t vzvpdvzcut = fabs(mVpdVz + 999.0) < 1e-2 || fabs(mVz - mVpdVz) < anaCuts::vzVpdVz;
 		//Bool_t notPileUp = picoEvent->refMult()<picoEvent->btofTrayMultiplicity()*0.36+45;//from kshen
-		Bool_t notPileUp = mRefMultCorrUtil->passnTofMatchRefmultCut(mRefmult, picoEvent->nBTOFMatch());
+		Bool_t notPileUp = !mRefMultCorrUtil->isPileUpEvent(mRefmult6, picoEvent->nBTOFMatch(), mVz, mTotnMIP);
+		//Bool_t notPileUp = mRefMultCorrUtil->passnTofMatchRefmultCut(mRefmult, picoEvent->nBTOFMatch());
 		Bool_t cen0280cut = mCen16 > -1;
 
 		if (vzcut)
@@ -339,6 +342,7 @@ Int_t StPicoDstarMixedMaker::Make()
 
 		if (isGoodEvent(picoEvent) && notPileUp)
 		{
+			h_nTofMat_RefMul_gE->Fill(Refmult, picoEvent->nBTOFMatch());
 			mBfield = picoEvent->bField(); // 获取磁场
 			h_cen->Fill(mCen16);		   // 填充中心度
 			h_cen_rW->Fill(mCen16, reWeight); // 填充中心度（带权重）
@@ -822,6 +826,7 @@ Int_t StPicoDstarMixedMaker::Finish()
 	h_VpdVzmVz->Write();
 	h_Vx_Vy->Write();
 	h_nTofMat_RefMul->Write();
+	h_nTofMat_RefMul_gE->Write();
 	h_mRefMult->Write();
 	// track level QA
 	h_nHitsFit->Write();
@@ -1027,6 +1032,26 @@ Int_t StPicoDstarMixedMaker::getRefmult(StPicoDst const *const picoDst, StPicoEv
 		refMult++;
 	}
 	return refMult;
+}
+
+Double_t StPicoDstarMixedMaker::getTotnMIP(StPicoDst const *const picoDst) const
+{
+	Double_t totnMIP = 0.;
+	Int_t nEpdHits = picoDst->numberOfEpdHits();
+	for (Int_t iHit = 0; iHit < nEpdHits; iHit++)
+	{
+		StPicoEpdHit *epdHit = picoDst->epdHit(iHit);
+		if (!epdHit)
+			continue;
+		if (epdHit->nMIP() < 0.3)
+			continue;
+		else if (epdHit->nMIP() <= 6.)
+			totnMIP += epdHit->nMIP();
+		else
+			totnMIP += 6.;
+	}
+	// cout << "Total nMIP: " << totnMIP << endl;
+	return totnMIP;
 }
 
 Double_t StPicoDstarMixedMaker::getNSigmaECorr(TVector3 mom) const

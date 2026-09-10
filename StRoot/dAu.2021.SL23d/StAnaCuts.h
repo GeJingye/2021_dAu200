@@ -18,7 +18,7 @@
 
 namespace anaCuts
 {
-	const std::array<UInt_t, 8> trigNumber = {880141,880131,880121,880111,880101};
+	const std::array<UInt_t, 8> trigNumber = {880021,880011,880001};
 	//880021,880011,880001:zdce-mb;
 	//880022,880012,880002:mb-hltgood;
 	//880141,880131,880121,880111,880101:zdce-epde-central;

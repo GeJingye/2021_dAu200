@@ -32,7 +32,7 @@ namespace anaCuts
 	Float_t const NHitsDedx = 15;
 	Float_t const Dca = 1;
 	// border
-	Float_t const Pt = 0.2;
+	Float_t const Pt = 0.5;
 	Float_t const Eta = 1.0;
 	// beta cut
 	Float_t const invBetaCut = 0.025;

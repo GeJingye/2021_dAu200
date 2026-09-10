@@ -1,7 +1,7 @@
 //---------------------从dAu200GeV.root中提取直方图，并进行设置更改和元素添加----------------------
 //Diff. with OO/CalMee.C: 1.没有混合背景；2.没有Rotation背景；3.没有UM-LM test
 #include "../2021_OO200/someFunction.h"
-void CalMee(TString inFileName = "roots/20260908_He3Au2014_TOF_ZDCETg.root", Int_t number =14)
+void CalMee(TString inFileName = "roots/15_20260909_He3Au2014_TOF_ZDCETg_rmP0p5.root", Int_t number =15)
 {
 	//vector<Double_t> Mee__newEdges = {0.25,0.27,0.28,0.29,0.30,0.31,0.32,0.33,0.34,0.35,0.36,0.37, 0.38,0.39, 0.40,0.41,0.42,0.6};//pion mass
 	// 定义新的bin边界
@@ -102,8 +102,8 @@ void CalMee(TString inFileName = "roots/20260908_He3Au2014_TOF_ZDCETg.root", Int
 
 	// 3-D Unlike-MixedEvent背景
 	//Float_t NR_low_M = 0.3, NR_up_M = 1, NR_low_pt = 1, NR_up_pt = 3;//pAu2015
-	Float_t NR_low_M = 0.5, NR_up_M = 2, NR_low_pt = 0, NR_up_pt = 2;//d+Au
-	//Float_t NR_low_M = 0.5, NR_up_M = 3, NR_low_pt = 0, NR_up_pt = 2;//He3Au2014
+	//Float_t NR_low_M = 0.5, NR_up_M = 2, NR_low_pt = 0, NR_up_pt = 2;//d+Au
+	Float_t NR_low_M = 0.5, NR_up_M = 3, NR_low_pt = 0, NR_up_pt = 2;//He3Au2014
 	//OO from Zihan
 	Float_t scale = ComputeMixEventScale(h_Mee_Pt_Cen__likepp_Rebin, h_Mee_Pt_Cen__likemm_Rebin,h_Mee_Pt_Cen__likeppMixed_Rebin, h_Mee_Pt_Cen__likemmMixed_Rebin,h_Mee_Pt_Cen__unlikeMixed_Rebin, NR_low_M, NR_up_M, NR_low_pt, NR_up_pt, 1, 16);
 	cout << "scale: " << scale << endl;
@@ -226,7 +226,7 @@ void CalMee(TString inFileName = "roots/20260908_He3Au2014_TOF_ZDCETg.root", Int
 	TH2F *h_Mee_Pt__likeppMixed_Rebin = (TH2F*)h_Mee_Pt_Cen__likeppMixed_Rebin->Project3D("yx");
 	TH2F *h_Mee_Pt__unlikeMixed_Rebin = (TH2F*)h_Mee_Pt_Cen__unlikeMixed_Rebin->Project3D("yx");
 	TH2F *h_Mee_Pt__LikeMixed_Rebin = (TH2F*)h_Mee_Pt_Cen__LikeMixed_Rebin->Project3D("yx");
-	if (10)// 寻找normalized region
+	if (0)// 寻找normalized region
 	{
 		const int nPt = 5;
 		TH1F* h_Mee__likemm_Rebin[nPt] = { nullptr };
@@ -662,7 +662,7 @@ void CalMee(TString inFileName = "roots/20260908_He3Au2014_TOF_ZDCETg.root", Int
 		c2->SaveAs(Form("roots/%d_Mee_PSAC.png", number));
 	}
 
-	if (0)// 不同scale的1-D UM背景对信号(US-UM)的影响
+	if (1)// 不同scale的1-D UM背景对信号(US-UM)的影响
 	{
 		// 设置直方图格式
 		h_Mee__unlikeSame_Rebin->SetLineColor(1);			h_Mee__unlikeSame_Rebin->SetMarkerStyle(kOpenCircle);			h_Mee__unlikeSame_Rebin->SetMarkerColor(1); 		h_Mee__unlikeSame_Rebin->SetMarkerSize(0.5);

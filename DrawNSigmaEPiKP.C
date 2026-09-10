@@ -1,7 +1,7 @@
 //---------------------从dAu200GeV_2016.root中提取直方图，并进行设置更改和元素添加----------------------
 #include "../2021_OO200/someFunction.h"
 #include "StRoot/dAu.2021.SL23d/StAnaCuts.h"
-void DrawNSigmaEPiKP(TString inFilename = "roots/10_20260905_He3Au2014_TOF_cutPEbyTagSingle_onlyCentralTgForMixed.root", Int_t number = 10) //
+void DrawNSigmaEPiKP(TString inFilename = "roots/15_20260909_He3Au2014_TOF_ZDCETg_rmP0p5.root", Int_t number = 15) //
 {
 	// 从root文件中导入待拟合的直方图
 	TFile *inFile = new TFile(inFilename);
@@ -86,7 +86,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/10_20260905_He3Au2014_TOF_cutPE
 
 		c_temp->SaveAs(Form("roots/%d_temp.png", number));
 	}
-	if (1) // h_passEvtcut,h_passTrkcut,h_nHitsFit_Pt_Eta,h_nHitsDEdx_Pt_Eta,h_pDca_Pt_Eta
+	if (0) // h_passEvtcut,h_passTrkcut,h_nHitsFit_Pt_Eta,h_nHitsDEdx_Pt_Eta,h_pDca_Pt_Eta
 	{
 		// 投影
 		TH2F *h_nHitsFit_Pt = (TH2F *)h_nHitsFit_Pt_Eta->Project3D("zx");if(!h_nHitsFit_Pt) {cout<<"h_nHitsFit_Pt not found! Exiting..."<<endl; return;}
@@ -316,7 +316,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/10_20260905_He3Au2014_TOF_cutPE
 
 		c1->SaveAs(Form("roots/%d_TrackQA_and_TrackTOFMatch.png", number));
 	}
-	if (0) // check PhiV cut
+	if (10) // check PhiV cut
 	{
 		h_Mee__unlikeSame->SetLineColor(kBlack);
 		h_Mee__unlikeSame->GetYaxis()->SetTitleOffset(1.5);
@@ -364,8 +364,8 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/10_20260905_He3Au2014_TOF_cutPE
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		h_Mee__unlikeSame->GetXaxis()->SetRangeUser(0, 2);
-		h_Mee__unlikeSame__w_PhiV_Cut->GetXaxis()->SetRangeUser(0, 2);
+		h_Mee__unlikeSame->GetXaxis()->SetRangeUser(0, 4);
+		h_Mee__unlikeSame__w_PhiV_Cut->GetXaxis()->SetRangeUser(0, 4);
 		h_Mee__unlikeSame->DrawClone("");
 		h_Mee__unlikeSame__w_PhiV_Cut->DrawClone("same");
 		legend->DrawClone("same");

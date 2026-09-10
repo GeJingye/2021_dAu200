@@ -79,6 +79,7 @@ class StPicoDstarMixedMaker : public StMaker
 	Double_t getPhiVAngle(TLorentzVector e1, TLorentzVector e2, Int_t q1, Int_t q2) const;
     Int_t getRefmult(StPicoDst const* const picoDst, StPicoEvent const* const picoEvent) const;
     Int_t getRefmult6(StPicoDst const* const picoDst, StPicoEvent const* const picoEvent) const;
+    Double_t getTotnMIP(StPicoDst const* const picoDst) const;
 	Double_t getNSigmaECorr(TVector3 mom) const;
 	Double_t getNSigmaPiKPCorr(Int_t num_variable, TVector3 mom) const;
 	void copyCurrentToBuffer();
@@ -114,6 +115,7 @@ class StPicoDstarMixedMaker : public StMaker
 	Float_t mBfield;
 	Int_t mRefmult;
     Int_t mRefmult6;
+    Int_t mTotnMIP;
 	Int_t Refmult;
 	Int_t mCen16,mCen9;
     TF1* fphiVcut;
@@ -123,7 +125,6 @@ class StPicoDstarMixedMaker : public StMaker
     TH1F* h_cen;
     TH1F* h_cen_rW;
     TH1F* h_RefMult;
-    
     // Histograms
     // event QA
 	TH2F* h_Vx_Vy;
@@ -133,6 +134,7 @@ class StPicoDstarMixedMaker : public StMaker
     TH2F* h_VpdVz_Vz;
     TH1F* h_VpdVzmVz;
     TH2F* h_nTofMat_RefMul;
+    TH2F* h_nTofMat_RefMul_gE;
     TH1F* h_mRefMult;
     // track level QA
     TH1F* h_nHitsFit;
