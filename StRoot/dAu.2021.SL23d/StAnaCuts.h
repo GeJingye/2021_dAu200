@@ -18,13 +18,13 @@
 
 namespace anaCuts
 {
-	const std::array<UInt_t, 8> trigNumber = {880021,880011,880001};
+	const std::array<UInt_t, 8> trigNumber = {880141,880131,880121,880111,880101};
 	//880021,880011,880001:zdce-mb;
 	//880022,880012,880002:mb-hltgood;
 	//880141,880131,880121,880111,880101:zdce-epde-central;
 	//880142,880132,880122,880112,880102:central-hltgood;
 	// event cuts 
-	Float_t const Vz_up = 70;//70
+	Float_t const Vz_up = 70;//70;
 	Float_t const Vz_low = -50;//-50
 	Float_t const Vr = 2; // 2cm
 	Float_t const vzVpdVz = 10; // cm
@@ -105,6 +105,5 @@ namespace anaCuts
 	-0.139453
 	};
 	
-
 }
 #endif

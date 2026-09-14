@@ -367,8 +367,8 @@ Int_t StPicoDstarMixedMaker::Make()
 		Bool_t vrcut = mVr < anaCuts::Vr;
 		Bool_t verrcut = !(fabs(mVx) < anaCuts::Verr && fabs(mVy) < anaCuts::Verr && fabs(mVz) < anaCuts::Verr); // Vx,Vy,Vz<1.0e-5 cm, why? too small that better than resolution.
 		Bool_t vzvpdvzcut = fabs(mVpdVz + 999.0) < 1e-2 || fabs(mVz - mVpdVz) < anaCuts::vzVpdVz;
-		//Bool_t notPileUp = picoEvent->refMult()<picoEvent->btofTrayMultiplicity()*0.36+45;//from kshen
-		Bool_t notPileUp = kTRUE;//mRefMultCorrUtil->passnTofMatchRefmultCut(mRefmult, picoEvent->nBTOFMatch());
+		Bool_t notPileUp = Refmult<picoEvent->btofTrayMultiplicity()*0.36+45;//from kshen
+		//Bool_t notPileUp = kTRUE;//mRefMultCorrUtil->passnTofMatchRefmultCut(mRefmult, picoEvent->nBTOFMatch());
 		Bool_t cen0280cut = mCen16 > -1;
 
 		if (vzcut)
@@ -625,11 +625,11 @@ Int_t StPicoDstarMixedMaker::Make()
 					Double_t angleV = getPhiVAngle(particle1_4V, particle2_4V, 1, -1); // 注意参数1、-1的选取要求
 					Double_t angleVcut = fphiVcut->Eval(eepair.M());				   // 根据fphiVcut关于pair-M的函数取值
 					h_Mee_PhiV__unlikeSame->Fill(eepair.M(), angleV);
-					// if (eepair.M() < 0.02)
-					// {
-					// 	positroninfo[x].isDalitzE = kTRUE;
-					// 	electroninfo[y].isDalitzE = kTRUE;
-					// }
+					if (eepair.M() < 0.02)
+					{
+						positroninfo[x].isDalitzE = kTRUE;
+						electroninfo[y].isDalitzE = kTRUE;
+					}
 					if (eepair.M() < anaCuts::PhiVCutMRange && angleV < angleVcut)
 					{
 						positroninfo[x].isPhotonicE = kTRUE;
@@ -1023,7 +1023,7 @@ Bool_t StPicoDstarMixedMaker::isGoodEvent(StPicoEvent const *const picoEvent) co
 		   pVtx.z() > anaCuts::Vz_low &&
 		   !(fabs(pVtx.x()) < anaCuts::Verr && fabs(pVtx.y()) < anaCuts::Verr && fabs(pVtx.z()) < anaCuts::Verr)&&
 		   sqrt(pVtx.x() * pVtx.x() + pVtx.y() * pVtx.y()) < anaCuts::Vr &&
-		   fabs(pVtx.z() - picoEvent->vzVpd()) < anaCuts::vzVpdVz;
+		   (fabs(picoEvent->vzVpd() + 999.0) < 1e-2 || fabs(pVtx.z() - picoEvent->vzVpd()) < anaCuts::vzVpdVz);
 }
 
 Bool_t StPicoDstarMixedMaker::isGoodTrack(StPicoTrack const *trk, StPicoEvent const *const picoEvent) const

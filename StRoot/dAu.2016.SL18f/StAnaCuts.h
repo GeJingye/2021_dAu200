@@ -20,8 +20,8 @@ namespace anaCuts
 {
 	const std::array<UInt_t, 11> trigNumber = {530003};//VPD-5
 	// event cuts 
-	Float_t const Vz_up = 50;
-	Float_t const Vz_low = -50;
+	Float_t const Vz_up = 40;
+	Float_t const Vz_low = -40;
 	Float_t const Vr = 2; // 2cm
 	Float_t const vzVpdVz = 5; // cm
 	Float_t const Verr = 1e-5; // cm

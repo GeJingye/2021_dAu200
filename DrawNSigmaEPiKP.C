@@ -1,7 +1,7 @@
 //---------------------从dAu200GeV_2016.root中提取直方图，并进行设置更改和元素添加----------------------
 #include "../2021_OO200/someFunction.h"
 #include "StRoot/dAu.2021.SL23d/StAnaCuts.h"
-void DrawNSigmaEPiKP(TString inFilename = "roots/15_20260909_He3Au2014_TOF_ZDCETg_rmP0p5.root", Int_t number = 15) //
+void DrawNSigmaEPiKP(TString inFilename = "roots/dAu/14_20260912_dAu2021_TOF_onlyMB.root", Int_t number = 14) //
 {
 	// 从root文件中导入待拟合的直方图
 	TFile *inFile = new TFile(inFilename);
@@ -17,18 +17,18 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/15_20260909_He3Au2014_TOF_ZDCET
 	TH1F *h_VpdVzmVz = (TH1F *)inFile->Get("h_VpdVzmVz");//h_VpdVzmVz->GetXaxis()->SetRangeUser(-20,20);
 	Double_t underflow = h_VpdVz->GetBinContent(0);  // underflow bin 索引为 0
 	Double_t overflow  = h_VpdVz->GetBinContent(h_VpdVz->GetNbinsX() + 1);  // overflow bin 索引为 n+1
-	// std::cout << "Underflow: " << underflow << std::endl;
-	// std::cout << "Overflow:  " << overflow << std::endl;
+	std::cout << "Underflow: " << underflow << std::endl;
+	std::cout << "Overflow:  " << overflow << std::endl;
 
-	// Int_t binLow  = h_VpdVzmVz->FindBin(-10.0);   // 找到 -10 对应的 bin
-	// Int_t binHigh = h_VpdVzmVz->FindBin( 10.0);   // 找到  10 对应的 bin
-	// Double_t countInRange = h_VpdVzmVz->Integral(binLow, binHigh);
-	// Double_t totalCount = h_VpdVzmVz->Integral(1, h_VpdVzmVz->GetNbinsX());
-	// Double_t totalCount1 = h_VpdVzmVz->Integral(0, h_VpdVzmVz->GetNbinsX() + 1);
-	// std::cout << "Count in [-10, 10] cm: " << countInRange << std::endl;
-	// std::cout << "Total count: " << totalCount << std::endl;
-	// std::cout << "Total count (including under/overflow): " << totalCount1 << std::endl;
-	// std::cout << "Fraction in range: " << countInRange / totalCount * 100 << "%" << std::endl;
+	Int_t binLow  = h_VpdVzmVz->FindBin(-10.0);   // 找到 -10 对应的 bin
+	Int_t binHigh = h_VpdVzmVz->FindBin( 10.0);   // 找到  10 对应的 bin
+	Double_t countInRange = h_VpdVzmVz->Integral(binLow, binHigh);
+	Double_t totalCount = h_VpdVzmVz->Integral(1, h_VpdVzmVz->GetNbinsX());
+	Double_t totalCount1 = h_VpdVzmVz->Integral(0, h_VpdVzmVz->GetNbinsX() + 1);
+	std::cout << "Count in [-10, 10] cm: " << countInRange << std::endl;
+	std::cout << "Total count: " << totalCount << std::endl;
+	std::cout << "Total count (including under/overflow): " << totalCount1 << std::endl;
+	std::cout << "Fraction in range: " << countInRange / totalCount * 100 << "%" << std::endl;
 	TH1F *h_mRefMult = (TH1F *)inFile->Get("h_mRefMult");if(!h_mRefMult) {cout<<"h_mRefMult not found! Exiting..."<<endl; return;}
 	TH2F *h_nTofMat_RefMul = (TH2F *)inFile->Get("h_nTofMat_RefMul");if(!h_nTofMat_RefMul) {cout<<"h_nTofMat_RefMul not found! Exiting..."<<endl; return;}
 	TH1F *h_passEvtcut = (TH1F *)inFile->Get("h_passEvtcut");if(!h_passEvtcut) {cout<<"h_passEvtcut not found! Exiting..."<<endl; return;}
@@ -86,7 +86,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/15_20260909_He3Au2014_TOF_ZDCET
 
 		c_temp->SaveAs(Form("roots/%d_temp.png", number));
 	}
-	if (0) // h_passEvtcut,h_passTrkcut,h_nHitsFit_Pt_Eta,h_nHitsDEdx_Pt_Eta,h_pDca_Pt_Eta
+	if (10) // h_passEvtcut,h_passTrkcut,h_nHitsFit_Pt_Eta,h_nHitsDEdx_Pt_Eta,h_pDca_Pt_Eta
 	{
 		// 投影
 		TH2F *h_nHitsFit_Pt = (TH2F *)h_nHitsFit_Pt_Eta->Project3D("zx");if(!h_nHitsFit_Pt) {cout<<"h_nHitsFit_Pt not found! Exiting..."<<endl; return;}
@@ -379,7 +379,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/15_20260909_He3Au2014_TOF_ZDCET
 		c_temp->SaveAs(Form("roots/%d_PhiV_Check.png", number));
 	}
 
-	if (0) // EID in group1(pT>0.2, |eta|<1)
+	if (10) // EID in group1(pT>0.2, |eta|<1)
 	{
 		// 设置直方图格式
 		// 去除误差条，设置Marker形状颜色，设置线条颜色，设置图例，设置坐标轴标题，设置对数Y坐标）

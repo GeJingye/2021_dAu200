@@ -439,7 +439,7 @@ Int_t StPicoDstarMixedMaker::Make()
 				Double_t nSigmaEcorrfactor = getNSigmaECorr(mom);
 				Double_t nSigmaEcorr = nSigmaE - nSigmaEcorrfactor;
 				h_nSigmaEcorr_P->Fill(mom.Mag(), nSigmaEcorr);
-				//Double_t temp = nSigmaEcorr; nSigmaEcorr = nSigmaE; nSigmaE = temp;//将nsigmaE和nsigmaEcorr置换
+				Double_t temp = nSigmaEcorr; nSigmaEcorr = nSigmaE; nSigmaE = temp;//将nsigmaE和nsigmaEcorr置换
 
 				// Electrons IDentification
 				Bool_t isTOFElectron__1 = kFALSE;
@@ -922,7 +922,7 @@ Bool_t StPicoDstarMixedMaker::isGoodEvent(StPicoEvent const *const picoEvent) co
 		   pVtx.z() > anaCuts::Vz_low &&
 		   !(fabs(pVtx.x()) < anaCuts::Verr && fabs(pVtx.y()) < anaCuts::Verr && fabs(pVtx.z()) < anaCuts::Verr)&&
 		   sqrt(pVtx.x() * pVtx.x() + pVtx.y() * pVtx.y()) < anaCuts::Vr &&
-		   fabs(pVtx.z() - picoEvent->vzVpd()) < anaCuts::vzVpdVz;
+		   (fabs(picoEvent->vzVpd() + 999.0) < 1e-2 || fabs(pVtx.z() - picoEvent->vzVpd()) < anaCuts::vzVpdVz);
 }
 
 Bool_t StPicoDstarMixedMaker::isGoodTrack(StPicoTrack const *trk, StPicoEvent const *const picoEvent) const

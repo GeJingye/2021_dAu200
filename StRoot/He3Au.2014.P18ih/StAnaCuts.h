@@ -18,11 +18,11 @@
 
 namespace anaCuts
 {
-	const std::array<UInt_t, 2> trigNumber = {460001};//460101,460111(Central);//460001(ZDCE),
+	const std::array<UInt_t, 2> trigNumber = {460101,460111};//460101,460111(Central);//460001(ZDCE),
 	//										                 	
 	// event cuts 
-	Float_t const Vz_up = 40;//70;
-	Float_t const Vz_low = -40;//-50;
+	Float_t const Vz_up = 70;//70;
+	Float_t const Vz_low = -50;//-50;
 	Float_t const Vr = 2; // 2cm
 	Float_t const vzVpdVz = 10; // cm
 	Float_t const Verr = 1e-5; // cm
@@ -32,7 +32,7 @@ namespace anaCuts
 	Float_t const NHitsDedx = 15;
 	Float_t const Dca = 1;
 	// border
-	Float_t const Pt = 0.5;
+	Float_t const Pt = 0.2;
 	Float_t const Eta = 1.0;
 	// beta cut
 	Float_t const invBetaCut = 0.025;

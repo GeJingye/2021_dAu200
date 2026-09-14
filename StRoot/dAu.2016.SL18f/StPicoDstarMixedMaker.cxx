@@ -226,19 +226,16 @@ void StPicoDstarMixedMaker::initHists()
 	h_phi__positrons_w_PhiV_Cut = new TH1F("h_phi__positrons_w_PhiV_Cut", "#phi of positrons with #phi_{V} cut;#phi", 64, -3.2, 3.2);
 
 	h_Rapidity__unlikeSame = new TH1F("h_Rapidity__unlikeSame", "y distribution of e^{+}e^{-};y;counts", 800, -4, 4);
-	h_Mee_PhiV__unlikeSame = new TH2F("h_Mee_PhiV__unlikeSame", "Mee vs #phi_{V};Mee(GeV/c^{2});#phi_{V}", 50000, 0, 500, 100, 0, 1);
-	h_Mee__unlikeSame = new TH1F("h_Mee__unlikeSame", "Mee without #phi_{V} cut;Mee(GeV/c^{2})", 50000, 0, 500);
-	h_Mee__unlikeSame__w_PhiV_Cut = new TH1F("h_Mee__unlikeSame__w_PhiV_Cut", "Mee with #phi_{V} cut;Mee(GeV/c^{2})", 50000, 0, 500);
+	h_Mee_PhiV__unlikeSame = new TH2F("h_Mee_PhiV__unlikeSame", "Mee vs #phi_{V};Mee(GeV/c^{2});#phi_{V}", 800, 0, 4, 100, 0, 1);
+	h_Mee__unlikeSame = new TH1F("h_Mee__unlikeSame", "Mee without #phi_{V} cut;Mee(GeV/c^{2})", 800, 0, 4);
+	h_Mee__unlikeSame__w_PhiV_Cut = new TH1F("h_Mee__unlikeSame__w_PhiV_Cut", "Mee with #phi_{V} cut;Mee(GeV/c^{2})", 800, 0, 4);
 
-	h_Pt__unlikeSame = new TH1F("h_Pt__unlikeSame", "p_{T} of unlike sign same flavor pairs;p_{T} (GeV/c)", 5000, 0., 5.);
-	h_Pt__likemm = new TH1F("h_Pt__likemm", "p_{T};p_{T} (GeV/c)", 5000, 0, 5);
-	h_Pt__likepp = new TH1F("h_Pt__likepp", "p_{T};p_{T} (GeV/c)", 5000, 0, 5);
-	h_Mee_Pt_Cen__unlikeSame = new TH3F("h_Mee_Pt_Cen__unlikeSame", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 50000, 0, 500, 5, 0, 5, 16, 0, 16);
-	h_Mee_Pt_Cen__likemm = new TH3F("h_Mee_Pt_Cen__likemm", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 		 50000, 0, 500, 5, 0, 5, 16, 0, 16);
-	h_Mee_Pt_Cen__likepp = new TH3F("h_Mee_Pt_Cen__likepp", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 		 50000, 0, 500, 5, 0, 5, 16, 0, 16);
-	h_Mee_Pt_Cen__unlikeMixed = new TH3F("h_Mee_Pt_Cen__unlikeMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 50000, 0, 500, 5, 0, 5, 16, 0, 16);
-	h_Mee_Pt_Cen__likemmMixed = new TH3F("h_Mee_Pt_Cen__likemmMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 50000, 0, 500, 5, 0, 5, 16, 0, 16);
-	h_Mee_Pt_Cen__likeppMixed = new TH3F("h_Mee_Pt_Cen__likeppMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 50000, 0, 500, 5, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__unlikeSame = new TH3F("h_Mee_Pt_Cen__unlikeSame", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 500, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__likemm = new TH3F("h_Mee_Pt_Cen__likemm", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 		 800, 0, 4, 500, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__likepp = new TH3F("h_Mee_Pt_Cen__likepp", "Mee vs p_{T} vs Cen;Mee (GeV/c^{2});p_{T} (GeV/c);Cen", 		 800, 0, 4, 500, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__unlikeMixed = new TH3F("h_Mee_Pt_Cen__unlikeMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 500, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__likemmMixed = new TH3F("h_Mee_Pt_Cen__likemmMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 500, 0, 5, 16, 0, 16);
+	h_Mee_Pt_Cen__likeppMixed = new TH3F("h_Mee_Pt_Cen__likeppMixed", "Mee vs p_{T} vs Cen;Mee(GeV/c^{2});p_{T} (GeV/c);Cen", 800, 0, 4, 500, 0, 5, 16, 0, 16);
 } //
 
 Int_t StPicoDstarMixedMaker::Make()
@@ -310,13 +307,31 @@ Int_t StPicoDstarMixedMaker::Make()
 		//mRefMultCorrUtil->initEvent(mRefmult, mVz, picoEvent->ZDCx());
 		mCen9 = 0;//mRefMultCorrUtil->getCentralityBin9();
 		mCen16 = 0;//mRefMultCorrUtil->getCentralityBin16();
+		if(mRefmult<2.0)mCen16 = -1;
+		else if (mRefmult<4.0)mCen16 = 0;
+		else if (mRefmult<6.0)mCen16 = 1;
+		else if (mRefmult<7.0)mCen16 = 2;
+		else if (mRefmult<8.0)mCen16 = 3;
+		else if (mRefmult<9.0)mCen16 = 4;
+		else if (mRefmult<10.0)mCen16 = 5;
+		else if (mRefmult<11.0)mCen16 = 6;
+		else if (mRefmult<12.0)mCen16 = 7;
+		else if (mRefmult<14.0)mCen16 = 8;
+		else if (mRefmult<16.0)mCen16 = 9;
+		else if (mRefmult<18.0)mCen16 = 10;
+		else if (mRefmult<20.0)mCen16 = 11;
+		else if (mRefmult<23.0)mCen16 = 12;
+		else if (mRefmult<27.0)mCen16 = 13;
+		else if (mRefmult<32.0)mCen16 = 14;
+		else if (mRefmult<40.0)mCen16 = 15;
+		else mCen16 = 16;
 		Double_t reWeight = 1;//mRefMultCorrUtil->getWeight();
 
 		// 不同条件cut后的事例数统计
 		Bool_t vzcut = mVz < anaCuts::Vz_up && mVz > anaCuts::Vz_low;
 		Bool_t vrcut = mVr < anaCuts::Vr;
 		Bool_t verrcut = !(fabs(mVx) < anaCuts::Verr && fabs(mVy) < anaCuts::Verr && fabs(mVz) < anaCuts::Verr); // Vx,Vy,Vz<1.0e-5 cm, why? too small that better than resolution.
-		Bool_t vzvpdvzcut = fabs(mVz - mVpdVz) < anaCuts::vzVpdVz;
+		Bool_t vzvpdvzcut = fabs(mVpdVz + 999.0) < 1e-2 || fabs(mVz - mVpdVz) < anaCuts::vzVpdVz;
 		//Bool_t notPileUp = picoEvent->refMult()<picoEvent->btofTrayMultiplicity()*0.36+45;//from kshen
 		Bool_t notPileUp = kTRUE;//mRefMultCorrUtil->passnTofMatchRefmultCut(mRefmult, picoEvent->nBTOFMatch());
 		Bool_t cen0280cut = mCen16 > -1;
@@ -566,7 +581,7 @@ Int_t StPicoDstarMixedMaker::Make()
 					// phiV cut
 					Double_t angleV = getPhiVAngle(particle1_4V, particle2_4V, 1, -1); // 注意参数1、-1的选取要求
 					Double_t angleVcut = fphiVcut->Eval(eepair.M());				   // 根据fphiVcut关于pair-M的函数取值
-					h_Mee_PhiV__unlikeSame->Fill(eepair.M()*1000, angleV);
+					h_Mee_PhiV__unlikeSame->Fill(eepair.M(), angleV);
 					if (eepair.M() < anaCuts::PhiVCutMRange && angleV < angleVcut)
 					{
 						positroninfo[x].isPhotonicE = kTRUE;
@@ -630,21 +645,17 @@ Int_t StPicoDstarMixedMaker::Make()
 					particle2_4V.SetPz(electroninfo[y].p3);
 					particle2_4V.SetE(electroninfo[y].energy);
 					eepair = particle1_4V + particle2_4V;
+					h_Mee__unlikeSame->Fill(eepair.M());
 					Double_t angleV = getPhiVAngle(particle1_4V, particle2_4V, 1, -1);// 注意参数1、-1的选取要求
 					Double_t angleVcut = fphiVcut->Eval(eepair.M()); // 根据fphiVcut关于pair-M的函数取值
-					h_Mee__unlikeSame->Fill(eepair.M()*1000);
 					if (eepair.M() > anaCuts::PhiVCutMRange || angleV > angleVcut)
-					{
-						
-					//}
 					//if (!positroninfo[x].isPhotonicE && !electroninfo[y].isPhotonicE)
-					//{
-						h_Mee__unlikeSame__w_PhiV_Cut->Fill(eepair.M()*1000);
+					{
+						h_Mee__unlikeSame__w_PhiV_Cut->Fill(eepair.M());
 						h_Rapidity__unlikeSame->Fill(eepair.Rapidity());
 						if (fabs(eepair.Rapidity()) <= 1) // 为什么需要在中心快度区？
 						{
-							h_Mee_Pt_Cen__unlikeSame->Fill(eepair.M()*1000, eepair.Perp(), mCen16);
-							h_Pt__unlikeSame->Fill(eepair.Perp());
+							h_Mee_Pt_Cen__unlikeSame->Fill(eepair.M(), eepair.Perp(), mCen16);
 						}
 					}
 				}
@@ -671,8 +682,7 @@ Int_t StPicoDstarMixedMaker::Make()
 					{
 						if (fabs(eepair.Rapidity()) <= 1) // 判断重建的粒子是否在中心快度区，为什么需要在中心快度区？
 						{
-							h_Mee_Pt_Cen__likemm->Fill(eepair.M()*1000, eepair.Perp(), mCen16);
-							h_Pt__likemm->Fill(eepair.Perp());
+							h_Mee_Pt_Cen__likemm->Fill(eepair.M(), eepair.Perp(), mCen16);
 						}
 					}
 				}
@@ -698,8 +708,7 @@ Int_t StPicoDstarMixedMaker::Make()
 					{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
-							h_Mee_Pt_Cen__likepp->Fill(eepair.M()*1000, eepair.Perp(), mCen16);
-							h_Pt__likepp->Fill(eepair.Perp());
+							h_Mee_Pt_Cen__likepp->Fill(eepair.M(), eepair.Perp(), mCen16);
 						}
 					}
 				}
@@ -745,7 +754,7 @@ Int_t StPicoDstarMixedMaker::Make()
 						{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
-							h_Mee_Pt_Cen__unlikeMixed->Fill(eepair.M()*1000, eepair.Perp(), mCen16);
+							h_Mee_Pt_Cen__unlikeMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
 						}
 						}
 					}
@@ -761,7 +770,7 @@ Int_t StPicoDstarMixedMaker::Make()
 						{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
-							h_Mee_Pt_Cen__unlikeMixed->Fill(eepair.M()*1000, eepair.Perp(), mCen16);
+							h_Mee_Pt_Cen__unlikeMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
 						}
 						}
 					}
@@ -777,7 +786,7 @@ Int_t StPicoDstarMixedMaker::Make()
 						{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
-							h_Mee_Pt_Cen__likeppMixed->Fill(eepair.M()*1000, eepair.Perp(), mCen16);
+							h_Mee_Pt_Cen__likeppMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
 						}
 						}
 					}
@@ -793,7 +802,7 @@ Int_t StPicoDstarMixedMaker::Make()
 						{
 						if (fabs(eepair.Rapidity()) <= 1)
 						{
-							h_Mee_Pt_Cen__likemmMixed->Fill(eepair.M()*1000, eepair.Perp(), mCen16);
+							h_Mee_Pt_Cen__likemmMixed->Fill(eepair.M(), eepair.Perp(), mCen16);
 						}
 						}
 					}
@@ -889,10 +898,6 @@ Int_t StPicoDstarMixedMaker::Finish()
 	h_Mee__unlikeSame->Write();
 	h_Mee__unlikeSame__w_PhiV_Cut->Write();
 
-	h_Pt__unlikeSame->Write();
-	h_Pt__likemm->Write();
-	h_Pt__likepp->Write();
-
 	h_Mee_Pt_Cen__unlikeSame->Write();
 	h_Mee_Pt_Cen__likemm->Write();
 	h_Mee_Pt_Cen__likepp->Write();
@@ -922,7 +927,7 @@ Bool_t StPicoDstarMixedMaker::isGoodEvent(StPicoEvent const *const picoEvent) co
 		   pVtx.z() > anaCuts::Vz_low &&
 		   !(fabs(pVtx.x()) < anaCuts::Verr && fabs(pVtx.y()) < anaCuts::Verr && fabs(pVtx.z()) < anaCuts::Verr)&&
 		   sqrt(pVtx.x() * pVtx.x() + pVtx.y() * pVtx.y()) < anaCuts::Vr &&
-		   fabs(pVtx.z() - picoEvent->vzVpd()) < anaCuts::vzVpdVz;
+		   (fabs(picoEvent->vzVpd() + 999.0) < 1e-2 ||fabs(pVtx.z() - picoEvent->vzVpd()) < anaCuts::vzVpdVz);
 }
 
 Bool_t StPicoDstarMixedMaker::isGoodTrack(StPicoTrack const *trk, StPicoEvent const *const picoEvent) const
