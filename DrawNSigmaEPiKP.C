@@ -1,7 +1,7 @@
 //---------------------从dAu200GeV_2016.root中提取直方图，并进行设置更改和元素添加----------------------
 #include "../2021_OO200/someFunction.h"
-#include "StRoot/dAu.2021.SL23d/StAnaCuts.h"
-void DrawNSigmaEPiKP(TString inFilename = "roots/dAu/14_20260912_dAu2021_TOF_onlyMB.root", Int_t number = 14) //
+#include "StRoot/He3Au.2014.P18ih/StAnaCuts.h"
+void DrawNSigmaEPiKP(TString inFilename = "roots/He3Au/11_20260908_He3Au2014_TOF_ZDCETg_Vz40.root", Int_t number = 11) //
 {
 	// 从root文件中导入待拟合的直方图
 	TFile *inFile = new TFile(inFilename);
@@ -14,21 +14,22 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/dAu/14_20260912_dAu2021_TOF_onl
 	TH1F *h_Vz = (TH1F *)inFile->Get("h_Vz");
 	TH1F *h_Vr = (TH1F *)inFile->Get("h_Vr");
 	TH1F *h_VpdVz = (TH1F *)inFile->Get("h_VpdVz");
+
 	TH1F *h_VpdVzmVz = (TH1F *)inFile->Get("h_VpdVzmVz");//h_VpdVzmVz->GetXaxis()->SetRangeUser(-20,20);
 	Double_t underflow = h_VpdVz->GetBinContent(0);  // underflow bin 索引为 0
 	Double_t overflow  = h_VpdVz->GetBinContent(h_VpdVz->GetNbinsX() + 1);  // overflow bin 索引为 n+1
 	std::cout << "Underflow: " << underflow << std::endl;
 	std::cout << "Overflow:  " << overflow << std::endl;
-
 	Int_t binLow  = h_VpdVzmVz->FindBin(-10.0);   // 找到 -10 对应的 bin
 	Int_t binHigh = h_VpdVzmVz->FindBin( 10.0);   // 找到  10 对应的 bin
 	Double_t countInRange = h_VpdVzmVz->Integral(binLow, binHigh);
 	Double_t totalCount = h_VpdVzmVz->Integral(1, h_VpdVzmVz->GetNbinsX());
 	Double_t totalCount1 = h_VpdVzmVz->Integral(0, h_VpdVzmVz->GetNbinsX() + 1);
-	std::cout << "Count in [-10, 10] cm: " << countInRange << std::endl;
-	std::cout << "Total count: " << totalCount << std::endl;
-	std::cout << "Total count (including under/overflow): " << totalCount1 << std::endl;
-	std::cout << "Fraction in range: " << countInRange / totalCount * 100 << "%" << std::endl;
+	std::cout << "events in [-10, 10] cm: " << countInRange << std::endl;
+	std::cout << "VPD success events: " << totalCount << std::endl;
+	std::cout << "Total count: " << totalCount1 << std::endl;
+	std::cout << "Fraction in [-10, 10]: " << countInRange / totalCount1 * 100 << "%" << std::endl;
+
 	TH1F *h_mRefMult = (TH1F *)inFile->Get("h_mRefMult");if(!h_mRefMult) {cout<<"h_mRefMult not found! Exiting..."<<endl; return;}
 	TH2F *h_nTofMat_RefMul = (TH2F *)inFile->Get("h_nTofMat_RefMul");if(!h_nTofMat_RefMul) {cout<<"h_nTofMat_RefMul not found! Exiting..."<<endl; return;}
 	TH1F *h_passEvtcut = (TH1F *)inFile->Get("h_passEvtcut");if(!h_passEvtcut) {cout<<"h_passEvtcut not found! Exiting..."<<endl; return;}
@@ -95,10 +96,13 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/dAu/14_20260912_dAu2021_TOF_onl
 		TH2F *h_nHitsDEdx_Eta = (TH2F *)h_nHitsDEdx_Pt_Eta->Project3D("zy");if(!h_nHitsDEdx_Eta) {cout<<"h_nHitsDEdx_Eta not found! Exiting..."<<endl; return;}
 		TH2F *h_pDca_Pt = (TH2F *)h_pDca_Pt_Eta->Project3D("xy");if(!h_pDca_Pt) {cout<<"h_pDca_Pt not found! Exiting..."<<endl; return;}
 		TH2F *h_pDca_Eta = (TH2F *)h_pDca_Pt_Eta->Project3D("xz");if(!h_pDca_Eta) {cout<<"h_pDca_Eta not found! Exiting..."<<endl; return;}
+		TH1D *h_nHitsFit = h_nHitsFit_Pt_Eta->ProjectionZ("h_nHitsFit_1D");
+		TH1D *h_nHitsDEdx = h_nHitsDEdx_Pt_Eta->ProjectionZ("h_nHitsDEdx_1D");
+		TH1D *h_pDca = h_pDca_Pt_Eta->ProjectionX("h_pDca_1D");
 		// 误差条，设置Marker形状颜色，设置线条颜色，设置图例，设置坐标轴标题，设置对数Y坐标）
 		//h_Vx_Vy->SetTitle("V_{z} vs V_{x};V_{x} (cm);V_{z} (cm)");
 		//h_VpdVz_Vz->SetTitle("V_{z}(TPC) vs V_{z}(VPD);V_{z}(VPD) (cm);V_{z}(TPC) (cm)");
-		TCanvas *c_temp = new TCanvas("c_temp", "c_temp", 900, 800);
+		TCanvas *c_temp = new TCanvas("c_temp", "c_temp", 1600, 1400);
 		c_temp->Divide(4, 4);
 
 		c_temp->cd(1);
@@ -106,7 +110,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/dAu/14_20260912_dAu2021_TOF_onl
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		h_ppTc_pPhi->GetXaxis()->SetRangeUser(0.0, 5.0);
+		h_ppTc_pPhi->GetXaxis()->SetRangeUser(-5.0, 0.0);
 		h_ppTc_pPhi->DrawClone("col z");
 
 		c_temp->cd(2);
@@ -114,7 +118,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/dAu/14_20260912_dAu2021_TOF_onl
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		h_ppTc_pPhi->GetXaxis()->SetRangeUser(-5.0, 0.0);
+		h_ppTc_pPhi->GetXaxis()->SetRangeUser(0.0, 5.0);
 		h_ppTc_pPhi->DrawClone("col z");
 
 		c_temp->cd(3);
@@ -135,6 +139,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/dAu/14_20260912_dAu2021_TOF_onl
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
+		h_VpdVzmVz->GetXaxis()->SetRangeUser(-20, 20);
 		h_VpdVzmVz->DrawClone("col z");
 		TLine *line_VPDmVz1 = new TLine(anaCuts::vzVpdVz, 0, anaCuts::vzVpdVz, 1e8);
 		line_VPDmVz1->SetLineColor(kRed);
@@ -177,31 +182,34 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/dAu/14_20260912_dAu2021_TOF_onl
 		h_passTrkcut->DrawClone("same");
 
 		c_temp->cd(9);
-		gPad->SetLogz(1);
+		gPad->SetLogy(1);
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		h_nHitsFit_Pt->SetTitle("nHitsFit vs p_{T}");
-		h_nHitsFit_Pt->GetXaxis()->SetRangeUser(0.0, 3.0);
-		h_nHitsFit_Pt->DrawClone("col z");
+		h_nHitsFit->SetTitle("nHitsFit");
+		h_nHitsFit->GetXaxis()->SetTitle("nHitsFit");
+		h_nHitsFit->GetYaxis()->SetTitle("Counts");
+		h_nHitsFit->Draw("hist");
 
 		c_temp->cd(10);
-		gPad->SetLogz(1);
+		gPad->SetLogy(1);
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		h_nHitsDEdx_Pt->SetTitle("nHitsDEdx vs p_{T}");
-		h_nHitsDEdx_Pt->GetXaxis()->SetRangeUser(0.0, 3.0);
-		h_nHitsDEdx_Pt->DrawClone("col z");
+		h_nHitsDEdx->SetTitle("nHitsDEdx");
+		h_nHitsDEdx->GetXaxis()->SetTitle("nHitsDEdx");
+		h_nHitsDEdx->GetYaxis()->SetTitle("Counts");
+		h_nHitsDEdx->Draw("hist");
 
 		c_temp->cd(11);
-		gPad->SetLogz(1);
+		gPad->SetLogy(1);
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
-		h_pDca_Pt->SetTitle("DCA vs p_{T}");
-		h_pDca_Pt->GetXaxis()->SetRangeUser(0.0, 3.0);
-		h_pDca_Pt->DrawClone("col z");
+		h_pDca->SetTitle("DCA");
+		h_pDca->GetXaxis()->SetTitle("DCA (cm)");
+		h_pDca->GetYaxis()->SetTitle("Counts");
+		h_pDca->Draw("hist");
 
 		c_temp->cd(12);
 		gPad->SetLogz(1);
@@ -252,6 +260,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/dAu/14_20260912_dAu2021_TOF_onl
 		gPad->SetLeftMargin(0.12);
 		gPad->SetRightMargin(0.12);
 		gStyle->SetOptStat(0);
+		h_cen->SetMinimum(0);
 		h_cen->DrawClone();
 
 		c_temp->SaveAs(Form("roots/%d_Track_and_Event_Check.png", number));
@@ -316,7 +325,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/dAu/14_20260912_dAu2021_TOF_onl
 
 		c1->SaveAs(Form("roots/%d_TrackQA_and_TrackTOFMatch.png", number));
 	}
-	if (10) // check PhiV cut
+	if (0) // check PhiV cut
 	{
 		h_Mee__unlikeSame->SetLineColor(kBlack);
 		h_Mee__unlikeSame->GetYaxis()->SetTitleOffset(1.5);
@@ -379,7 +388,7 @@ void DrawNSigmaEPiKP(TString inFilename = "roots/dAu/14_20260912_dAu2021_TOF_onl
 		c_temp->SaveAs(Form("roots/%d_PhiV_Check.png", number));
 	}
 
-	if (10) // EID in group1(pT>0.2, |eta|<1)
+	if (0) // EID in group1(pT>0.2, |eta|<1)
 	{
 		// 设置直方图格式
 		// 去除误差条，设置Marker形状颜色，设置线条颜色，设置图例，设置坐标轴标题，设置对数Y坐标）

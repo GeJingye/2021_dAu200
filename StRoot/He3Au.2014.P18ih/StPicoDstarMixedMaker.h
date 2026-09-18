@@ -24,13 +24,15 @@
 #include "TH3.h"
 #include "TF1.h"
 #include "TLorentzVector.h"
+#include "StPicoEvent/StPicoHelix.h"
+#include "StPhysicalHelix.hh"
+#include "StPicoEvent/StPicoPhysicalHelix.h"
 class TString;
 class TFile;
 class TNtuple;
 class StPicoTrack;
 class StPicoDstMaker;
 class StPicoEvent;
-class ParticleInfo;
 
 class ParticleInfo
 {
@@ -51,9 +53,21 @@ class ParticleInfo
 	Float_t p1;
 	Float_t p2;
 	Float_t p3;
+    Int_t id;
 	Bool_t isPhotonicE;//isPhotonicE
     Bool_t isDalitzE;//isDalitzE
 	Bool_t isPureE;
+};
+class PartnerInfo
+{
+  public:
+	StPicoPhysicalHelix helix;
+	Float_t energy;
+	Float_t p1;
+	Float_t p2;
+	Float_t p3;
+    Int_t id;
+	Bool_t isPhotonicE;
 };
 
 class StPicoDstarMixedMaker : public StMaker
@@ -129,9 +143,11 @@ class StPicoDstarMixedMaker : public StMaker
 	TH2F* h_Vx_Vy;
 	TH1F* h_Vr;
     TH1F* h_Vz;
+    TH1F* h_Vz__otherCuts;
     TH1F* h_VpdVz;
     TH2F* h_VpdVz_Vz;
     TH1F* h_VpdVzmVz;
+    TH2F* h_Vpdfails_Tofmatch;
     TH2F* h_nTofMat_RefMul;
     TH1F* h_mRefMult;
     // track level QA
@@ -150,6 +166,8 @@ class StPicoDstarMixedMaker : public StMaker
 	TH2F* h_nSigmaPion_P;
 	TH2F* h_nSigmaKaon_P;
 	TH2F* h_nSigmaProton_P;
+	TH2F* h_nSigmaE_P__Partner; // 伙伴电子（模式电子）的 nSigmaE vs p
+	TH1F* h_pairDCA;			// 模式电子对（e+ e-）两条螺旋线之间的最近距离 DCA
 
     TH1F* h_pDca;
     TH1F* h_pDca_HFTTrack;
@@ -222,6 +240,11 @@ class StPicoDstarMixedMaker : public StMaker
     TH3F* h_Mee_Pt_Cen__unlikeSame;
     TH3F* h_Mee_Pt_Cen__likemm;
     TH3F* h_Mee_Pt_Cen__likepp;
+
+    // 模式电子（PE = Partner Electron） × 正常电子
+    TH3F* h_Mee_Pt_Cen__unlikeSame_PE;
+    TH3F* h_Mee_Pt_Cen__likemm_PE;
+    TH3F* h_Mee_Pt_Cen__likepp_PE;
 
     TH3F* h_Mee_Pt_Cen__unlikeMixed;
     TH3F* h_Mee_Pt_Cen__likemmMixed;

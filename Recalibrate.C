@@ -1,7 +1,7 @@
 //---------------------OO.root----------------------
 #include "../2021_OO200/someFunction.h"
 #include <iomanip>
-void Recalibrate(TString inFileName = "roots/dAu/12_20260909_dAu2021_TOF_onlyCentral.root", Int_t number = 12)//;;
+void Recalibrate(TString inFileName = "roots/He3Au/10_20260908_He3Au2014_TOF_CentralTg.root", Int_t number = 10)//;;
 {
 	// root
 	TFile *inFile = new TFile(inFileName);
@@ -28,7 +28,7 @@ void Recalibrate(TString inFileName = "roots/dAu/12_20260909_dAu2021_TOF_onlyCen
 	TH2F* h2_zmean_gausFit_Phi;
 	TH1F* h1_xmean_cen__binCount_Phi;
 	TH1F* h1_xmean_cen__gausFit_Phi;
-	if (0) // 输出修正量数组
+	if (1) // 输出修正量数组
 	{
 		//Pt
 		h2_zmean_binCount_Pt = (TH2F*)MeanOfH3D_binCount(h_Pt_Cen_nSigmaE, "h2_zmean_binCount_Pt");
@@ -47,39 +47,49 @@ void Recalibrate(TString inFileName = "roots/dAu/12_20260909_dAu2021_TOF_onlyCen
 		h1_xmean_cen__binCount_Phi = (TH1F*)Meanof2DAlongX(h2_zmean_binCount_Phi, "h1_xmean_cen__binCount_Phi");
 		h1_xmean_cen__gausFit_Phi = (TH1F*)Meanof2DAlongX(h2_zmean_gausFit_Phi, "h1_xmean_cen__gausFit_Phi");
 		//2D-eta-cen
-		std::cout << "mean[cen][eta]:" << endl;
+		std::cout << "const Double_t etaCorr[8][40] = {" << endl;
 		for (int iy = 1; iy <= h2_zmean_gausFit_Eta->GetNbinsY(); iy++)//h2_zmean_gausFit_Eta;
 		{
 			std::cout << "{";
 			for (int ix = 1; ix <= h2_zmean_gausFit_Eta->GetNbinsX(); ix++)
 			{
 				float content = h2_zmean_gausFit_Eta->GetBinContent(ix, iy);
-				std::cout << std::fixed << std::setprecision(3);
-				std::cout << content << ',';
+				std::cout << std::fixed << std::setprecision(5);
+				std::cout << content;
+				if (ix < h2_zmean_gausFit_Eta->GetNbinsX()) std::cout << ',';
 			}
-			std::cout << "}," << endl;
+			std::cout << "}";
+			if (iy < h2_zmean_gausFit_Eta->GetNbinsY()) std::cout << ',';
+			std::cout << endl;
 		}
+		std::cout << "};" << endl;
 		//2D-phi-cen
-		std::cout << "mean[cen][phi]:" << endl;
+		std::cout << "const Double_t phiCorr[8][64] = {" << endl;
 		for (int iy = 1; iy <= h2_zmean_gausFit_Phi->GetNbinsY(); iy++)//h2_zmean_gausFit_Phi;
 		{
 			std::cout << "{";
 			for (int ix = 1; ix <= h2_zmean_gausFit_Phi->GetNbinsX(); ix++)
 			{
 				float content = h2_zmean_gausFit_Phi->GetBinContent(ix, iy);
-				std::cout << std::fixed << std::setprecision(3);
-				std::cout << content << ',';
+				std::cout << std::fixed << std::setprecision(5);
+				std::cout << content;
+				if (ix < h2_zmean_gausFit_Phi->GetNbinsX()) std::cout << ',';
 			}
-			std::cout << "}," << endl;
+			std::cout << "}";
+			if (iy < h2_zmean_gausFit_Phi->GetNbinsY()) std::cout << ',';
+			std::cout << endl;
 		}
+		std::cout << "};" << endl;
 		//1D-phi-cen
-		std::cout << "phimean[cen]:" << endl;
+		std::cout << "const Double_t phiAverageCorr[8] = {" << endl;
 		for (int ix = 1; ix <= h1_xmean_cen__gausFit_Phi->GetNbinsX(); ix++)
 		{
 			float content = h1_xmean_cen__gausFit_Phi->GetBinContent(ix);
-			std::cout << content << "," << endl;
-			if(ix== h1_xmean_cen__gausFit_Phi->GetNbinsX())cout<<endl;
+			std::cout << std::fixed << std::setprecision(5) << content;
+			if (ix < h1_xmean_cen__gausFit_Phi->GetNbinsX()) std::cout << ',';
+			std::cout << endl;
 		}
+		std::cout << "};" << endl;
 		}
 	if (0) //nsigma_e vs pT
 	{
@@ -403,7 +413,7 @@ void Recalibrate(TString inFileName = "roots/dAu/12_20260909_dAu2021_TOF_onlyCen
 
 		c_Pt->SaveAs(Form("roots/%d_nsigmaMean_Pt.png", number));
 	}
-	if (1)//nsigma_e vs Eta
+	if (0)//nsigma_e vs Eta
 	{
 		TCanvas *c_Eta = new TCanvas("c_Eta", "c_Eta", 1100, 500);
 		c_Eta->Divide(2);
@@ -455,7 +465,7 @@ void Recalibrate(TString inFileName = "roots/dAu/12_20260909_dAu2021_TOF_onlyCen
 
 		c_Eta->SaveAs(Form("roots/%d_nsigmaMean_Eta.png", number));
 	}
-	if (1)//nsigma_e vs Phi
+	if (0)//nsigma_e vs Phi
 	{
 		TCanvas *c_Phi = new TCanvas("c_Phi", "c_Phi", 1100, 500);
 		c_Phi->Divide(2);
