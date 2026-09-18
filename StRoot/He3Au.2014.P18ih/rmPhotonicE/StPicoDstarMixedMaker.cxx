@@ -1,4 +1,4 @@
-﻿// ****************************************************
+// ****************************************************
 // *                                                  *
 // *  Authors: Yuanjing Ji                            *
 // *           Guannan Xie <guannanxie@lbl.gov>       *
@@ -104,6 +104,12 @@ void StPicoDstarMixedMaker::initHists()
 {
 	ifstream readnum;
 	readnum.open(mRunNumList);
+	if (!readnum.is_open())
+	{
+		std::cerr << "StPicoDstarMixedMaker::initHists - cannot open run number list: "
+		          << mRunNumList << std::endl;
+		return;
+	}
 	Int_t runum = 0;
 	Int_t totalNum = 0;
 	while (readnum >> runum)
@@ -192,7 +198,7 @@ void StPicoDstarMixedMaker::initHists()
 	h_nSigmaPion_P = new TH2F("h_nSigmaPion_P", "n#sigma_{pi} vs p;p (GeV/c);n#sigma_{pi}", 500, 0, 5, 4000, -20, 20);
 	h_nSigmaKaon_P = new TH2F("h_nSigmaKaon_P", "n#sigma_{K} vs p;p (GeV/c);n#sigma_{K}", 500, 0, 5, 4000, -20, 20);
 	h_nSigmaProton_P = new TH2F("h_nSigmaProton_P", "n#sigma_{P} vs p;p (GeV/c);n#sigma_{P}", 500, 0, 5, 4000, -20, 20);
-	h_nSigmaE_P__Partner = new TH2F("h_nSigmaE_P__Partner", "n#sigma_{e} of partner electrons;n#sigma_{e};p (GeV/c)", 4000, -20, 20, 500, 0, 5);
+	h_nSigmaE_P__Partner = new TH2F("h_nSigmaE_P__Partner", "n#sigma_{e} of partner electrons;p (GeV/c);n#sigma_{e}", 500, 0, 5, 4000, -20, 20);
 	h_pairDCA = new TH1F("h_pairDCA", "DCA between partner e^{+} and e^{-};pair DCA (cm);counts", 500, 0., 5.); // 模式电子对两条螺旋线之间的最近距离
 	h_dEdx_Pc = new TH2F("h_dEdx_Pc", "dE/dx vs p*q;p*q(GeV/c);#frac{dE}{dx} (GeV cm^{2}/g)", 1000, -5, 5, 400, 0, 25);
 	h_m2 = new TH1F("h_m2", "m^{2};m^{2};counts", 2000, -0.5, 1.5);
@@ -316,7 +322,9 @@ Int_t StPicoDstarMixedMaker::Make()
 	positroninfo.clear();
 
 	mRunId = picoEvent->runId();
-	h_RunNum->Fill(mrunnum[mRunId]); // 填充不同run号的事例数；
+	auto itRun = mrunnum.find(mRunId);
+	if (itRun != mrunnum.end())
+		h_RunNum->Fill(itRun->second); // 填充不同run号的事例数；
 
 	TVector3 pVtx = picoEvent->primaryVertex(); // 获得TPC重建的该事例顶点的三维坐标
 	mVx = pVtx.x();
@@ -427,7 +435,7 @@ Int_t StPicoDstarMixedMaker::Make()
 			cenBufferIndex = mCen16;
 			if (cenBufferIndex < 0 || cenBufferIndex >= kCenBins)
 				return kStOK; // 界外判断
-			vzBufferIndex = static_cast<Int_t>((mVz - anaCuts::Vz_low) / (anaCuts::Vz_up - anaCuts::Vz_low)) * kVzBins;
+			vzBufferIndex = static_cast<Int_t>((mVz - anaCuts::Vz_low) / (anaCuts::Vz_up - anaCuts::Vz_low) * kVzBins);
 			if (vzBufferIndex < 0 || vzBufferIndex >= kVzBins)
 				return kStOK; // 界外判断
 
@@ -443,7 +451,7 @@ Int_t StPicoDstarMixedMaker::Make()
 				// ******************以下分析均基于主径迹**************************
 				Bool_t isPrimaryTrack = trk->isPrimary();
 				
-				h_passTrkcut->Fill(1);
+				if (isPrimaryTrack) h_passTrkcut->Fill(1);
 				TVector3 mom = trk->pMom();									  // 提取当前径迹在“主顶点处”的三维动量矢量？
 				Float_t mgDCAs = trk->gDCA(picoEvent->primaryVertex()).Mag(); // 返回该径迹与主顶点的最短距离，返回TVector3;
 
@@ -458,9 +466,9 @@ Int_t StPicoDstarMixedMaker::Make()
 
 
 				if( trk->gPt() > 0.25 &&
-				 	fabs(mom.Eta()) < 1 &&
-				 	fabs(nSigmaE) < 3 &&
-					trk->nHitsFit() > anaCuts::NHitsDedx &&
+				 	fabs(mom.Eta()) < anaCuts::Eta &&
+				 	fabs(nSigmaE) < 3.0 &&
+					trk->nHitsFit() > anaCuts::NHitsFit &&
 					trk->nHitsFit() * 1.0 / trk->nHitsMax()>= anaCuts::NHitsFitRatio)// Partner electrons tag
 				{
 					h_nSigmaE_P__Partner->Fill(mom.Mag(), nSigmaE);
@@ -1194,8 +1202,8 @@ Bool_t StPicoDstarMixedMaker::isGoodEvent(StPicoEvent const *const picoEvent) co
 Bool_t StPicoDstarMixedMaker::isGoodTrack(StPicoTrack const *trk, StPicoEvent const *const picoEvent) const
 {
 	TVector3 mom = trk->pMom();
-	return 		fabs(trk->nHitsFit()) >= anaCuts::NHitsFit &&
-				fabs(trk->nHitsDedx()) >= anaCuts::NHitsDedx &&
+	return 		trk->nHitsFit() >= anaCuts::NHitsFit &&
+				trk->nHitsDedx() >= anaCuts::NHitsDedx &&
 				trk->gDCA(picoEvent->primaryVertex()).Mag() <= anaCuts::Dca &&
 		   		fabs(trk->nHitsFit() * 1.0 / trk->nHitsMax()) >= anaCuts::NHitsFitRatio;
 }
